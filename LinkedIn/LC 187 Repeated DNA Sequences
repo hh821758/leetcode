@@ -1,0 +1,41 @@
+LC 187 Repeated DNA Sequences
+
+LinkedIn
+
+Medium
+
+因为只有四种char，所以可以用两个bit来代表。因为总共20个bits，所以可以用0xfffff来prune
+
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        HashMap<Integer, Integer> map = new HashMap<Integer,Integer>();
+        List<String> result = new ArrayList<String>();
+        int[] dna = new int[26];
+        dna['C'-'A'] = 1;
+        dna['G'-'A'] = 2;
+        dna['T'-'A'] = 3;
+        if(s.length()<10){
+            return result;
+        }
+        
+        int v = 0;
+        for(int i=0;i<s.length();i++){
+            v<<=2;
+            v|=dna[s.charAt(i)-'A'];
+            v&=0xfffff;
+            if(i<9){
+                continue;
+            }
+            if(!map.containsKey(v)){
+                map.put(v, 0);
+            }else{
+                if(map.get(v)==0){
+                    result.add(s.substring(i-9,i+1));
+                    map.put(v,1);
+                }
+            }
+            
+        }
+        return result;
+    }
+}

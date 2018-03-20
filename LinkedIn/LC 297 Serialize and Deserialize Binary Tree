@@ -1,0 +1,63 @@
+LC 297 Serialize and Deserialize Binary Tree
+
+LinkedIn
+
+Medium
+
+用preorder比较好理解和写代码。
+
+在重新构建tree的时候，手头有的是一个string array，包含所有树节点信息，我用了一个全局变量来记录recursion中我观察当前观察点的index。有人是把这些点放入queue中，然后把这个queue放入recursion来遍历，浪费了一定空间。
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+    public char NN = 'x';
+    public char spl = ',';
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        build(root, sb);
+        return sb.toString();
+    }
+    
+    public void build(TreeNode root, StringBuilder sb){
+        if(root==null){
+            sb.append(NN); sb.append(spl);
+        }else{
+            sb.append(root.val); sb.append(spl);
+            build(root.left, sb);
+            build(root.right, sb);
+        }
+        
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] nodes = data.split(",");        
+        TreeNode root = build2(nodes);
+        return root;
+    }
+    
+    int cur = 0;
+    
+    public TreeNode build2(String[] nodes){        
+        String node = nodes[cur];
+        if(node.equals("x")){
+            return null;
+        }else{
+            TreeNode n = new TreeNode(Integer.valueOf(node));
+            cur++;
+            n.left = build2(nodes);
+            cur++;
+            n.right = build2(nodes);
+            return n;
+        }
+    }
+}

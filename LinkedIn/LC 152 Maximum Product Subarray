@@ -1,0 +1,29 @@
+LC 152 Maximum Product Subarray
+
+LinkedIn
+
+Medium
+
+思路比较巧妙，选取了一个min和max来分别记录当前的min和max，在遇到符号反转时可以swap min和max。
+可以选取array中的第一个数进行初始化。
+
+class Solution {
+    public int maxProduct(int[] nums) {
+        int result = nums[0];
+        int max = result;
+        int min = result;
+        for(int i = 1; i<nums.length;i++){
+            int num = nums[i];
+            if(num<0){
+                int tmp = max;
+                max = min;
+                min = tmp;
+            }
+            max=Math.max(num, max*num);
+            min = Math.min(num, min*num);
+            result = Math.max(max, result);
+        }
+        return result;
+    }
+}
+

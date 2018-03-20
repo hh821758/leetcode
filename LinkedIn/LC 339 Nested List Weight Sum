@@ -1,0 +1,29 @@
+LC 339 Nested List Weight Sum
+
+LinkedIn
+
+Easy
+
+层数越深factor越大，可以直接dfs
+
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        int result = 0;
+        for(NestedInteger ni:nestedList){
+            result+=sum(ni, 1);
+        }
+        return result;
+    }
+    
+    public int sum(NestedInteger ni, int level){
+        if(ni.isInteger()){
+            return ni.getInteger()*level;
+        }else{
+            int result = 0;
+            for(NestedInteger nii:ni.getList()){
+                result+=sum(nii, level+1);
+            }
+            return result;
+        }
+    }
+}

@@ -1,0 +1,57 @@
+LC 464 Can I Win
+
+LinedIn
+
+Medium
+
+非常巧妙的dfs算法，基本思想是，在剩余的数中，只要我取某个数一定让对方失败，那么就说明当前剩余数的组合方式对我是必胜的。
+
+所以出现以下这种表达方式。
+因为总数字量比较小，所以把visted array转换成immutable的integer或者string来表示，从而作为hashmap的key使用。
+
+if(!helper(next)){
+    return true;
+}
+
+class Solution {
+    HashMap<Integer, Boolean> map;
+    boolean[] visited;
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        map = new HashMap<Integer, Boolean>();
+        visited = new boolean[maxChoosableInteger+1];
+        int sum = (maxChoosableInteger+1)*maxChoosableInteger/2;
+        if(sum<desiredTotal) return false;
+        if(desiredTotal<=0) return true;
+        return helper(desiredTotal);
+        
+    }
+    
+    public boolean helper(int total){
+        if(total<=0) return false;
+        int key = getKey();
+        if(map.containsKey(key)){
+            return map.get(key);
+        }
+        for(int i=1;i<visited.length;i++){
+            if(visited[i]) continue;
+            visited[i] = true;
+            if(!helper(total-i)){
+                map.put(key, true);
+                visited[i] = false;
+                return true;
+            }
+            visited[i] = false;
+        }
+        map.put(key, false);
+        return false;
+    }
+    
+    public int getKey(){
+        int res = 0;
+        for(boolean b:visited){
+            res<<=1;
+            if(b) res |= 1;
+        }
+        return res;
+    }
+}

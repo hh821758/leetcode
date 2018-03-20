@@ -1,0 +1,70 @@
+LC 156 Binary Tree Upside Down
+
+LinkedIn
+
+Medium
+
+我自己写出的方法， 从上至下一层一层fix，recursive
+
+class Solution {
+    TreeNode result = null;
+    public TreeNode upsideDownBinaryTree(TreeNode root) {
+        if(root == null || root.left == null) return root;
+        TreeNode oldleft = root.left;
+        TreeNode oldright = root.right;
+        root.left = null;
+        root.right = null;
+        fix(root, oldleft, oldright);
+        return result;
+    }
+    
+    public void fix(TreeNode root, TreeNode left, TreeNode right){
+        TreeNode oldleft = left.left;
+        TreeNode oldright = left.right;
+        left.left = right;
+        left.right = root;
+        if(oldleft!=null){
+            fix(left, oldleft, oldright);
+        }else{
+            result = left;
+        }
+        
+    }
+}
+
+别人的Recursive方法，找到最左leaf设为最终结果，然后从下至上一层一层fix
+
+public TreeNode upsideDownBinaryTree(TreeNode root) {
+    if(root == null || root.left == null) {
+        return root;
+    }
+    
+    TreeNode newRoot = upsideDownBinaryTree(root.left);
+    root.left.left = root.right;   // node 2 left children
+    root.left.right = root;         // node 2 right children
+    root.left = null;
+    root.right = null;
+    return newRoot;
+}
+
+别人的iterative方法，费脑子
+
+public TreeNode upsideDownBinaryTree(TreeNode root) {
+    TreeNode curr = root;
+    TreeNode next = null;
+    TreeNode temp = null;
+    TreeNode prev = null;
+    
+    while(curr != null) {
+        next = curr.left;
+        
+        // swapping nodes now, need temp to keep the previous right child
+        curr.left = temp;
+        temp = curr.right;
+        curr.right = prev;
+        
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}  

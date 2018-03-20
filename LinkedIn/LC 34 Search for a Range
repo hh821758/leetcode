@@ -1,0 +1,39 @@
+LC 34 Search for a Range
+
+LinkedIn
+
+Medium
+
+比较容易想到用binary search。但是需要注意到的一个问题是如何处理search中的边界。
+由于任意的i和i+1两个数算mid，结果都会是i，所以在binary search的时候，如果让l=mid，在最后i和i+1时，l就会一直不变。很多时候l=mid+1是因为在分析中l只能是mid右边的数。如果在分析中可以是mid，那么为了规避循环，每次算mid的时候就可以让
+mid=(h-l)/2+l+1
+
+public int[] searchRange(int[] nums, int target) {
+        if(nums.length == 0) return new int[]{-1,-1};
+        int l1 = 0;
+        int h1 = nums.length-1;
+        int l2 = 0;
+        int h2 = nums.length-1;
+        while(l1<h1){
+            int mid = (h1-l1)/2+l1;
+            if(nums[mid]>=target){
+                h1 = mid;
+            }else{
+                l1 = mid+1;
+            }
+        }
+        
+        int start = (nums[l1] == target)?l1:-1;
+        if(start == -1) return new int[]{-1,-1};
+        l2 = l1;
+        while(l2<h2){
+            int mid = (h2-l2)/2+l2+1;
+            if(nums[mid]<=target){
+                l2 = mid;
+            }else{
+                h2 = mid-1;
+            }
+        }
+        int end = l2;
+        return new int[]{start, end};
+    }

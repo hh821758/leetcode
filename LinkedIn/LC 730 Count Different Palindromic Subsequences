@@ -1,0 +1,63 @@
+LC 730 Count Different Palindromic Subsequences
+
+LinkedIn
+
+Hard
+
+dp的思路来解答。
+S[i]!=S[j]时，分别以(i,j-1)和(i+1, j)为边，加和在一起后，减去在算dp[i][j-1]和dp[i+1][j]已经重复计算过的dp[i+1][j-1]
+即dp[i][j] = dp[i][j-1]+dp[i+1][j]-dp[i+1][j-1]
+
+S[i]==S[j]时，需要考虑在i+1到j-1的范围内，是否已经出现了当前观察字母，因为这会影响重复的palindrom出现的数量。
+从i+1开始往右找，从j-1开始往左找，只要取到的char不是当前关注的char，就继续left++/right--, 知道left>right后就没必要再找。(注意while loop写法)
+
+case1. 找到了char并且left == right
+    这说明在i+1到j-1范围内只有一个char是与当前关注的char相同，"a.....a.....a"，这时候dp[i+1][j-1]被重复计算两次，一次是i+1到j-1自己，一次是包含i和j处的aa。除去这些还有一个的aa pair，单独的a在内部已经计算过了。
+    dp[i][j] = dp[i+1][j-1]*2 + 1
+
+case2. 找到了char并且left<right
+    这说明在i+1到j-1范围内至少有两个char是与当前关注的char相同, "a....a...a...a"， 因为这是dp解，内部的两个a之内是否还有其他a不重要，因为在之前的运算中必然已经去重。dp[i+1][j-1]仍然被重复计算两次，dp[left+1][right-1]要去重，因为不管是用ij处的a pair还是left right处的a pair，构成的palindrom是相同的。由于“a”和“aa”这两个情况是在dp[left][right]时已经处理，所以这个dp后面不需要单独加上。
+    dp[i][j] = dp[i+1][j-1]*2 - dp[left+1][right-1];
+
+case3. 没有找到char，最后left>right
+    这说明在i+1到j-1范围内没有当前关注的char，所以除了重复计算的dp[i+1][j-1]外，加上单独的“a”和“aa”共两种
+    dp[i][j] = dp[i+1][j-1]*2+2
+
+class Solution {
+    public int countPalindromicSubsequences(String S) {
+        int mod = 1000000007;
+        int len = S.length();
+        int[][] dp = new int[len][len];
+        for(int i=0;i<len;i++){
+            dp[i][i] = 1;
+        }
+        for(int k=2;k<=len;k++){
+            for(int i=0;i<len-k+1;i++){
+                int j = i+k-1;
+                char c1 = S.charAt(i);
+                char c2 = S.charAt(j);
+                if(c1 != c2){
+                    dp[i][j] = dp[i][j-1]+dp[i+1][j]-dp[i+1][j-1];
+                }else{
+                    int l = i+1;
+                    int h = j-1;
+                    while(l<=h && S.charAt(l) != c1){
+                        l++;
+                    }
+                    while(l<=h && S.charAt(h) != c1){
+                        h--;
+                    }
+                    if(h<l){
+                        dp[i][j] = dp[i+1][j-1]*2+2;
+                    }else if(h==l){
+                        dp[i][j] = dp[i+1][j-1]*2+1;
+                    }else{
+                        dp[i][j] = dp[i+1][j-1]*2-dp[l+1][h-1];
+                    }
+                }
+                dp[i][j] = (dp[i][j]<0)?(dp[i][j]+mod):dp[i][j]%mod;
+            }
+        }
+        return dp[0][len-1];
+    }
+}

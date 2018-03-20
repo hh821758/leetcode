@@ -1,0 +1,38 @@
+LC 698 Partition to K Equal Sum Subsets
+
+LinkedIn
+
+Medium
+
+这道题比较关键的点：
+1. 没找到一组数之后，并不能立即确认这组数是合理的，而是要继续递归下一组数，如果后续无法构成合理的组，说明之前找到的组是不成立的。
+2. 
+
+public boolean canPartitionKSubsets(int[] nums, int k) {
+    int sum = 0;
+    for(int num:nums){
+        sum+=num;
+    }
+    if(sum%k != 0) return false;
+    sum = sum/k;
+    boolean[] visited = new boolean[nums.length];
+    
+        if(!find(nums, 0, sum, k, visited, 0)) return false;
+    
+    return true;
+}
+
+public boolean find(int[] nums, int cur, int target, int k, boolean[] visited, int start){
+    if(k == 1) return true;
+    if(cur == target) return find(nums, 0, target, k-1, visited, 0);
+    if(cur > target) return false;
+    for(int i=start;i<nums.length;i++){
+        if(visited[i]) continue;
+        int num = nums[i];
+        visited[i] = true;
+        if(find(nums, cur+num, target, k, visited, i+1)) return true;
+        visited[i] = false;
+    
+    }
+    return false;
+}

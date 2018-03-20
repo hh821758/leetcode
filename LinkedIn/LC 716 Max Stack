@@ -1,0 +1,81 @@
+LC 716 Max Stack
+
+LinkedIn
+
+Hard
+
+push(x) -- Push element x onto stack.
+pop() -- Remove the element on top of the stack and return it.
+top() -- Get the element on the top.
+peekMax() -- Retrieve the maximum element in the stack.
+popMax() -- Retrieve the maximum element in the stack, and remove it. If you find more than one maximum elements, only remove the top-most one.
+
+package com.yoyo.code;
+/*
+ * 用两个stack来记录当前最大值和已有数值。popMax时候用一个临时stack来存临时pop出来的数
+ */
+import java.util.Stack;
+
+class MaxStack {
+	public static void main(String[] args){
+		MaxStack ms = new MaxStack();
+		ms.push(5);
+		ms.push(1);
+		ms.push(-5);
+		ms.popMax();
+		ms.popMax();
+		ms.top();
+	}
+    /** initialize your data structure here. */
+    Stack<Integer> max;
+    Stack<Integer> num;
+    public MaxStack() {
+        max = new Stack<Integer>();
+        num = new Stack<Integer>();
+    }
+    
+    public void push(int x) {
+        num.push(x);
+        if(max.isEmpty() || max.peek()<x){
+            max.push(x);
+        }else{
+            max.push(max.peek());
+        }
+    }
+    
+    public int pop() {
+        if(num.isEmpty()){
+            return -1;
+        }else{
+            max.pop();
+            return num.pop();
+        }
+    }
+    
+    public int top() {
+        return (num.isEmpty())?-1:num.peek();
+    }
+    
+    public int peekMax() {
+        return (max.isEmpty())?-1:max.peek();
+    }
+    
+    public int popMax() {
+        int result = -1;
+        if(num.isEmpty()){
+            return -1;
+        }else{
+            Stack<Integer> tmp = new Stack<Integer>();
+            while(num.peek()!=max.peek()){
+                tmp.push(num.pop());
+                max.pop();
+            }
+            result = num.pop();
+            max.pop();
+            while(!tmp.isEmpty()){
+                push(tmp.pop());
+            }
+        }
+        return result;
+    }
+}

@@ -1,0 +1,36 @@
+LC 671 Second Minimum Node In a Binary Tree
+
+LinkedIn
+
+Medium
+
+下面给出的写法是参考discuss后简化出的写法。
+
+巧妙的利用-1来代表没有找到不等于root的数。一但找到了不等于root的子节点，该节点的数值即为备选答案。
+
+在dfs的recursion中，比较的是当前点与子节点的关系。
+
+另一种之前的稍微复杂的写法，是记录下最小值，每次递归到新的点时，与最小值做比。
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int findSecondMinimumValue(TreeNode root) {
+        if(root == null) return -1;
+        if(root.left == null && root.right == null) return -1;
+        int left = (root.left.val == root.val)?findSecondMinimumValue(root.left):root.left.val;
+        int right = (root.right.val == root.val)?findSecondMinimumValue(root.right):root.right.val;
+        if(left != -1 && right != -1){
+            return Math.min(left, right);
+        }else{
+            return (left==-1)?right:left;
+        }
+    }
+}

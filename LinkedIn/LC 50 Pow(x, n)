@@ -1,0 +1,16 @@
+LC 50 Pow(x, n)
+
+LinkedIn
+
+Medium
+
+Corner case很不好处理，利用递归的方法可以规避掉在早期处理n=INTEGER.MIN_VALUE的情况。
+
+class Solution {
+    public double myPow(double x, int n) {
+        
+        if(n == 0) return 1;
+        double res = myPow(x, n/2);
+        return (n%2==0)?res*res:(n<0)?res*res/x:res*res*x;
+    }
+}

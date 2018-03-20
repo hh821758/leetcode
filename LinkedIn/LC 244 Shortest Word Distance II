@@ -1,0 +1,42 @@
+LC 244 Shortest Word Distance II
+
+LinkedIn
+
+Medium
+
+如果想要多次求最短，速度最快，那就提前用LC243算出两两string的最短距离并存储，消耗空间O(n^2)
+或者折中的方法，记录每个string出现处的index，用O(n)空间，和O(n)时间
+
+class WordDistance {
+    HashMap<String, List<Integer>> map;
+    public WordDistance(String[] words) {
+        map = new HashMap<String, List<Integer>>();
+        for(int i=0;i<words.length;i++){
+            String word = words[i];
+            if(!map.containsKey(word)){
+                map.put(word, new ArrayList<Integer>());
+            }
+            map.get(word).add(i);
+        }
+    }
+    
+    public int shortest(String word1, String word2) {
+        if(!map.containsKey(word1) || !map.containsKey(word2)) return 0;
+        List<Integer> list1 = map.get(word1);
+        List<Integer> list2 = map.get(word2);
+        int i=0;
+        int j=0;
+        int result = Integer.MAX_VALUE;
+        while(i<list1.size() && j<list2.size()){
+            int index1 = list1.get(i);
+            int index2 = list2.get(j);
+            result = Math.min(result, Math.abs(index1-index2));
+            if(index1>index2){
+                j++;
+            }else{
+                i++;
+            }
+        }
+        return result;
+    }
+}

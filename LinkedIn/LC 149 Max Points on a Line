@@ -1,0 +1,67 @@
+LC 149 Max Points on a Line
+
+LinkedIn
+
+Hard
+
+思路是，针对每个点，看有多少其他点与之共线。假设有点a1, a2, a3, .... an. 从a1开始，看a2到an针对不同斜率多少点与a1共线，并记录下最大数量。然后看a2点，这时可以直接从观察a3开始，忽略a1（如果a1帮助a2构成了最大数量共线，这个解在上个iteration处理a1时必然已经处理过）。依次类推，直到观察完所有点。
+
+判断共线的方法可以依据斜率，记录下某斜率下有多少个点。直接用(y1-y2)/(x1-x2)的方法会比较不稳定，所以可以用(x,y)pair来几率斜率，其中x和y，是x1-x2和y1-y2分别处以最大公约数后形成的唯一可标识斜率的数。
+
+欧几里得算法得出公约数。
+
+注意处理重复点的情况。假设观察a点时，发现其他点与a重合，那么无论之后出现哪个斜率，这个点都会在结果中占一个点位，可以在统计完所有点后运算结果中多加上重复的点数。
+
+/**
+ * Definition for a point.
+ * class Point {
+ *     int x;
+ *     int y;
+ *     Point() { x = 0; y = 0; }
+ *     Point(int a, int b) { x = a; y = b; }
+ * }
+ */
+class Solution {
+    public int maxPoints(Point[] points) {
+        int result = 0;
+        for(int i=0;i<points.length;i++){
+            int dup = 0;
+            int max = 0;
+            HashMap<Integer, HashMap<Integer,Integer>> map = new HashMap<Integer,HashMap<Integer,Integer>>();
+            for(int j=i+1;j<points.length;j++){
+                Point p1 = points[i];
+                Point p2 = points[j];
+                int x = p1.x-p2.x;
+                int y = p1.y-p2.y;
+                if(x==0&&y==0){
+                    dup++;
+                    continue;
+                }
+                int gcd = gcd(x, y);
+                if(gcd!=0){
+                    x/=gcd;
+                    y/=gcd;
+                }
+                if(map.containsKey(x)){
+                    if(map.get(x).containsKey(y)){
+                        map.get(x).put(y, map.get(x).get(y)+1);
+                    }else{
+                        map.get(x).put(y, 1);
+                    }
+                }else{
+                    map.put(x, new HashMap<Integer,Integer>());
+                    map.get(x).put(y,1);
+                }
+                
+                max = Math.max(max, map.get(x).get(y));
+                
+            }
+            result = Math.max(result, max+dup+1);
+        }
+        return result;   
+    }
+    
+    public int gcd(int a, int b){
+        return (b!=0)?gcd(b, a%b):a;
+    }
+}
