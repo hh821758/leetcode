@@ -1,0 +1,20 @@
+LC 334 Increasing Triplet Subsequence
+
+Facebook
+
+Medium
+
+相当巧妙的一道题，用两个变量来记录当前观察到的一大一小两个值。当找到比小值还要小的数时，更新小值，但是不更新大值，如果找到了一个比当前小值大但是比大值小的数时，更新大值。注意一个隐藏信息，只要大值被更新过，就说明大值前一定有比大值小的数，所以只要能找到比大值大的数，就一定满足题目要求。
+
+class Solution {
+    public boolean increasingTriplet(int[] nums) {
+        int smaller = Integer.MAX_VALUE;
+        int bigger = Integer.MAX_VALUE;
+        for(int num:nums){
+            if(num<=smaller) smaller = num;
+            else if(num<=bigger) bigger = num;
+            else return true;
+        }
+        return false;
+    }
+}

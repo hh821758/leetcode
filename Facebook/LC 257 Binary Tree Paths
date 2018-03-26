@@ -1,0 +1,38 @@
+LC 257 Binary Tree Paths
+
+Facebook
+
+Easy
+
+这个题要把路径都打印出来，而且还要在数与数直接加上个"->",如果用stringbuilder，需要注意分析dps回归时要删除多少char。
+如果直接用string相加的方式去append新的string，虽然慢，但是一直在构建新的object，不需要考虑删除。
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    List<String> result = new ArrayList<String>();
+    StringBuilder sb = new StringBuilder();
+    public List<String> binaryTreePaths(TreeNode root) {
+        if(root == null){
+            return result;
+        }
+        sb.append(root.val);
+        if(root.left==null && root.right==null){
+            result.add(sb.toString());
+            sb.delete(sb.length()-String.valueOf(root.val).length(), sb.length());
+        }else{
+            sb.append("->");
+            if(root.left!=null) binaryTreePaths(root.left);
+            if(root.right!=null) binaryTreePaths(root.right);
+            sb.delete(sb.length()-String.valueOf(root.val).length()-2, sb.length());
+        }
+        return result;
+    }
+}

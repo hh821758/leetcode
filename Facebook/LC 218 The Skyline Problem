@@ -1,0 +1,47 @@
+LC 218 The Skyline Problem
+
+Facebook
+
+Hard
+
+这个题思路很不好找，下面是根据discuss的解法整理过来的。
+整体思路是记录可能为拐点的地方的高度。
+
+记录start点的高度时候用负值来标记，记录end点的高度时用正数来标记，sort的时候高度的部分也要从小到大sort，这样能够保证同一个位置处如果有同一个高度的不同记录，start点先被处理到，从而保证不会错误的判断当前高度为0（因为负值小于正值）。
+
+class Solution {
+    public List<int[]> getSkyline(int[][] buildings) {
+        List<int[]> height = new ArrayList<int[]>();
+        List<int[]> result = new ArrayList<int[]>();
+        for(int[] b:buildings){
+            height.add(new int[]{b[0], -b[2]});
+            height.add(new int[]{b[1], b[2]});
+        }
+        Collections.sort(height, (int[] a, int[] b)->(a[0]==b[0])?(a[1]-b[1]):(a[0]-b[0]));
+        TreeMap<Integer, Integer> map = new TreeMap<Integer, Integer>();
+        map.put(0,1);
+        int pre = 0;
+        for(int[] h:height){
+            if(h[1]<0){
+                if(!map.containsKey(-h[1])) map.put(-h[1], 0);
+                map.put(-h[1],map.get(-h[1])+1);
+            }else{
+                map.put(h[1], map.get(h[1])-1);
+                if(map.get(h[1])==0) map.remove(h[1]);
+            }
+            if(pre != map.lastKey()){
+                if(result.size()==0){
+                    result.add(new int[]{h[0], map.lastKey()});
+                }else{
+                    if(result.get(result.size()-1)[0] == h[0]){
+                        result.get(result.size()-1)[0] = map.lastKey();
+                    }else{
+                        result.add(new int[]{h[0], map.lastKey()});
+                    }
+                }
+                pre = map.lastKey();
+            }
+        }
+        return result;
+    }
+}

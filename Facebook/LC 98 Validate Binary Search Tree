@@ -1,0 +1,65 @@
+LC 98 Validate Binary Search Tree
+
+Facebook
+
+Medium
+
+这个题的思路比较多，比较有参考价值。
+
+1. 按inorder traversal，recursive的方法：
+
+class Solution {
+    int pre = 0;
+    boolean found = false;
+    
+    public boolean isValidBST(TreeNode root){
+        if(root==null) return true;
+    	if(root.left!=null){
+            if(!isValidBST(root.left)) return false;
+        }
+        if(!found){
+            pre = root.val;
+            found = true;
+        }else{
+            if(root.val<=pre) return false;
+            pre = root.val;
+        }
+        if(root.right!=null){
+            if(!isValidBST(root.right)) return false;
+        }
+        return true;
+    }
+}
+
+2. 按inorder traversal， iteration的方法：
+
+public boolean isValidBST(TreeNode root) {
+   if (root == null) return true;
+   Stack<TreeNode> stack = new Stack<>();
+   TreeNode pre = null;
+   while (root != null || !stack.isEmpty()) {
+      while (root != null) {
+         stack.push(root);
+         root = root.left;
+      }
+      root = stack.pop();
+      if(pre != null && root.val <= pre.val) return false;
+      pre = root;
+      root = root.right;
+   }
+   return true;
+}
+
+3. recursive，给定当前点值得上下边界，比较巧妙：
+
+public class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    
+    public boolean isValidBST(TreeNode root, long minVal, long maxVal) {
+        if (root == null) return true;
+        if (root.val >= maxVal || root.val <= minVal) return false;
+        return isValidBST(root.left, minVal, root.val) && isValidBST(root.right, root.val, maxVal);
+    }
+}

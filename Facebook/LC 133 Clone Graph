@@ -1,0 +1,65 @@
+LC 133 Clone Graph
+
+Facebook
+
+Medium
+
+比较典型的图题，遍历原图，遍历的时候记录下旧点和新点的mapping关系，同时如果遍历的时候发现map中已经有当前观察点，说明之前的遍历已经处理了该点，则可以直接获得这个点并连边。
+
+下面的解法为DFS的解法。
+/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
+ * };
+ */
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if(node == null){
+            return null;
+        }
+        if(map.containsKey(node)){
+            return map.get(node);
+        }
+        UndirectedGraphNode newnode = new UndirectedGraphNode(node.label);
+        map.put(node, newnode);
+        for(UndirectedGraphNode neighbor : node.neighbors){
+            newnode.neighbors.add(cloneGraph(neighbor));
+        }
+        return newnode;
+    }
+    
+    
+    public HashMap<UndirectedGraphNode, UndirectedGraphNode> map = new HashMap<UndirectedGraphNode, UndirectedGraphNode>();
+}
+
+下面的是BFS解法：
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if(node == null){
+            return null;
+        }
+        HashMap<UndirectedGraphNode, UndirectedGraphNode> map = new HashMap<UndirectedGraphNode, UndirectedGraphNode>();
+        LinkedList<UndirectedGraphNode> queue = new LinkedList<UndirectedGraphNode>();
+        UndirectedGraphNode result = new UndirectedGraphNode(node.label);
+        map.put(node, result);
+        queue.offer(node);
+        while(!queue.isEmpty()){
+            UndirectedGraphNode oldnode = queue.poll();
+            UndirectedGraphNode newnode = map.get(oldnode);
+            for(UndirectedGraphNode oldneighbor: oldnode.neighbors){
+                UndirectedGraphNode newneighbor = map.getOrDefault(oldneighbor, new UndirectedGraphNode(oldneighbor.label));
+                newnode.neighbors.add(newneighbor);
+                if(!map.containsKey(oldneighbor)){ 
+                    queue.offer(oldneighbor);
+                    map.put(oldneighbor, newneighbor);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+}

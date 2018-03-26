@@ -1,0 +1,42 @@
+LC 273 Integer to English Words
+
+Facebook
+
+Hard
+
+对于这种一次性要观察几个数字的题目，直接利用modulo来取想要长度的信息。
+
+一个helper method可以用来方便的分析每种情况，用recursive是为了简化代码，本质上思路还是根据数的大小各种分情况分析。
+
+
+
+class Solution {
+    String[] thou = new String[]{"","Thousand", "Million","Billion"};
+    String[] nums = new String[]{"","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve",
+                                   "Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+    String[] ten = new String[]{"","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+    String result = "";
+    public String numberToWords(int num) {
+        if(num == 0){
+            return "Zero";
+        }
+        
+        int thouCount = 0;
+        boolean needThou = false;
+        while(num>0){
+            if(num%1000!=0){
+                result = helper(num%1000) + thou[thouCount] + " " + result;
+            }
+            num = num/1000;
+            thouCount++;
+        }
+        return result.trim();
+    }
+    
+    public String helper(int num){
+        if(num == 0) return "";
+        if(num<20) return nums[num] + " ";
+        if(num<100) return ten[num/10] + " " + helper(num%10);
+        return nums[num/100] + " Hundred " + helper(num%100);
+    }
+}

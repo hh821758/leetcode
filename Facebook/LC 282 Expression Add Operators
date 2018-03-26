@@ -1,0 +1,44 @@
+LC 282 Expression Add Operators
+
+Facebook
+
+Hard
+
+这个题大思路方向还是用backtrack，试验所有类型。比较巧妙的地方是用两个变量来记录之前运算的结果，一个变量是在当前观察点之前一直能作为乘法的备选结果，另一个变量是出去备选乘法结果外之前的数的运算结果。
+
+特殊情况：
+1. 运算过程中的结果大于Integer.MAX_VALUE或Integer.MIN_VALUE，所以使用long值来存结果。
+2. 当选取的一段数不是单个的0，但是仍然以0为起始，说明这段数不是一个合法的数，这种情况要直接跳过。
+
+class Solution {
+    List<String> result = new ArrayList<String>();
+    public List<String> addOperators(String num, int target) {
+        if(num == null || num.length()==0) return result;
+        helper(num, 0, 0, 0, target, "");
+        return result;
+        
+    }
+    
+    public void helper(String num, int i, long pre, long mult, int target, String s){
+        if(i==num.length()){
+            if((pre + mult)== target){
+                result.add(s);
+            }
+            return;
+        }
+        for(int j = i+1;j<=num.length();j++){
+            if(j>i+1 && num.charAt(i) == '0') break;
+            long n = Long.valueOf(num.substring(i,j));
+            if(s.length()==0){
+                helper(num, j, 0, n, target, num.substring(i,j));
+            }else{
+                // +
+                helper(num, j, pre+mult, n, target, s+"+"+num.substring(i,j));
+                // - 
+                helper(num, j, pre+mult, -n, target, s+"-"+num.substring(i,j));
+                // *
+                helper(num, j, pre, mult*n, target, s+"*"+num.substring(i,j));
+            }
+        }
+    }
+}

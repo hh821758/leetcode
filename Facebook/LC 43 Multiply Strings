@@ -1,0 +1,31 @@
+LC 43 Multiply Strings
+
+Facebook
+
+Medium
+
+一开始考虑到每次算出一个乘积，乘积可能影响到3个位，于是就同时计算了三个位的变化。比较巧妙的是，可以只算两位的变化，这时高位处的变量可能存有一个大于10的数，但是最终这个大于10的数会在之后的循环中被处理掉。于是只需要每次针对这两位数算就好。
+
+class Solution {
+    public String multiply(String num1, String num2) {
+        if(num1 == null || num2 == null || num1.length() == 0 || num2.length() == 0) return "";
+        int[] array = new int[num1.length()+num2.length()];
+        for(int i = num1.length()-1; i>=0; i--){
+            for(int j = num2.length()-1; j>=0; j--){
+                int a = num1.charAt(i)-'0';
+                int b = num2.charAt(j)-'0';
+                int mult = a*b;
+                int sum = mult + array[i+j+1]+array[i+j]*10;                
+                array[i+j]=sum/10;
+                array[i+j+1]=sum%10;                
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int num:array){
+            if(!(sb.length()==0 && num == 0)){
+                sb.append(num);
+            }
+        }
+        return (sb.length()==0)?"0":sb.toString();
+    }
+}

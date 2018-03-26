@@ -1,0 +1,19 @@
+LC 235 Lowest Common Ancestor of a Binary Search Tree
+
+这个题目的解法比较巧妙，值得记住
+
+Facebook
+
+Medium
+
+通过算乘法判断p和q是否都在root的同一边。一旦乘积不为0，如果乘积小于0，说明找到了结果节点，如果等于0，找到了p或q之一，但是无论是小于0还是等于0，都返回root。
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null) return null;
+        if((root.val-p.val)*(root.val-q.val)>0){
+            if(root.val>p.val) return lowestCommonAncestor(root.left, p, q);
+            if(root.val<p.val) return lowestCommonAncestor(root.right, p, q);
+        }
+        return root;
+    }
+}

@@ -1,0 +1,38 @@
+LC 253 Meeting Rooms II
+
+Facebook
+
+Medium
+
+观察当前会议，当有会议的终止时间比当前会议起始时间还大的时候，说明之前的会议都已经结束，否则就要开新会议室。
+考虑用一种data structure来记录已经观察过的会议的终止时间，并且最好是能直接找到哪些会议该结束，所以这种data structure是要能对会议终止时间进行排序。考虑用priorityqueue或者TreeMap
+
+
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+class Solution {
+    public int minMeetingRooms(Interval[] intervals) {
+        int min = 0;
+        PriorityQueue<Integer> heap = new PriorityQueue<Integer>();
+        Arrays.sort(intervals, (Interval a, Interval b)->(a.start != b.start)?(a.start-b.start):(a.end-b.end));
+        for(Interval i:intervals){
+            if(heap.size() == 0 || heap.peek()>i.start){
+                heap.offer(i.end);
+                min = Math.max(min, heap.size());
+            }else{
+                while(heap.size()>0 && heap.peek()<=i.start){
+                    heap.poll();
+                }
+                heap.offer(i.end);
+            }
+        }
+        return min;
+    }
+}

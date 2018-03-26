@@ -1,0 +1,75 @@
+LC 410 Split Array Largest Sum
+
+Facebook
+
+Hard
+
+这个题有两种比较典型的思路，一种是比较容易想到的用dp的方法。
+dp[i][j]：使用前j个数分成i个subset，能实现的最小的最大加和。
+
+class Solution {
+    public int splitArray(int[] nums, int m) {
+        int length = nums.length;
+        if(length<m) return 0;
+        long[] sums = new long[length];
+        long[][] dp = new long[m+1][length];
+        sums[0] = (long)nums[0];
+        dp[1][0] = (long)nums[0];
+        for(int i=1;i<sums.length;i++){
+            sums[i] = sums[i-1] + (long)nums[i];
+            dp[1][i] = sums[i];
+        }
+         
+        for(int i=2;i<=m;i++){
+            for(int j = i-1;j<length-m+i;j++){
+                long min = Long.MAX_VALUE;
+                for(int k =i-2;k<=j-1;k++){
+                    long tmp = Math.max(dp[i-1][k], (sums[j]-sums[k]));
+                    min = Math.min(min, tmp);
+                }
+                dp[i][j]=min;
+            }
+        }
+        return (int)dp[m][length-1];
+    }
+}
+
+另一个解法是binary search，判断search的数能不能把array分成m个subsets，并使每个subset的加和都不大于这个数。
+
+public class Solution {
+    public int splitArray(int[] nums, int m) {
+        int max = 0; long sum = 0;
+        for (int num : nums) {
+            max = Math.max(num, max);
+            sum += num;
+        }
+        if (m == 1) return (int)sum;
+        //binary search
+        // 要找的值最小不会小过array中的最大值，也不会小于sum/m的下边界。最大值不会超过整个array加和(m=1的时候出现。)
+        long l = Math.max(max,sum/m); long r = sum;
+        while (l <= r) {
+            long mid = (l + r)/ 2;
+            if (valid(mid, nums, m)) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return (int)l;
+    }
+    public boolean valid(long target, int[] nums, int m) {
+        int count = 1;
+        long total = 0;
+        for(int num : nums) {
+            total += num;
+            if (total > target) {
+                total = num;
+                count++;
+                if (count > m) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}

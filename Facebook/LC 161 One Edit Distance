@@ -1,0 +1,21 @@
+LC 161 One Edit Distance
+
+Facebook
+
+Medium
+
+这也是个比较典型的利用substring来处理的问题。当找到不相等的char时，只需要根据两个string长度对比，然后比较后面的substring即可，无需把后面的char再一个一个对比了。
+
+class Solution {
+    public boolean isOneEditDistance(String s, String t) {
+        if(Math.abs(s.length()-t.length())>1) return false;
+        for(int i = 0;i<s.length() && i<t.length();i++){
+            if(s.charAt(i) != t.charAt(i)){
+                if(s.length()==t.length()) return s.substring(i+1,s.length()).equals(t.substring(i+1,t.length()));
+                else if(s.length()>t.length()) return s.substring(i+1,s.length()).equals(t.substring(i,t.length()));
+                else if(s.length()<t.length()) return s.substring(i,s.length()).equals(t.substring(i+1,t.length()));
+            }
+        }
+        return (s.length()!=t.length());
+    }
+}

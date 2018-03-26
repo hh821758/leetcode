@@ -1,0 +1,42 @@
+LC 341 Flatten Nested List Iterator
+
+Facebook
+
+Medium
+
+这是NestedInteger又一个变体题。要设计一个能扁平化依次读取list中integer的Iterator。
+
+先出现的NestedInteger要先出现，但是用queue正序存会有问题，用stack存会比较方便处理
+
+public class NestedIterator implements Iterator<Integer> {
+    
+    
+    Stack<NestedInteger> stack = new Stack<NestedInteger>();
+    public NestedIterator(List<NestedInteger> nestedList) {
+        for(int i = nestedList.size()-1;i>=0;i--){
+            stack.push(nestedList.get(i));
+        }
+    }
+
+    @Override
+    public Integer next() {
+        return stack.pop().getInteger();
+    }
+
+    @Override
+    public boolean hasNext() {
+        while(!stack.isEmpty()){
+            NestedInteger peek = stack.peek();
+            if(peek.isInteger()){
+                return true;
+            }else{
+                stack.pop();
+                List<NestedInteger> list = peek.getList();
+                for(int i = list.size()-1;i>=0;i--){
+                    stack.push(list.get(i));
+                }
+            }
+        }
+        return false;
+    }
+}

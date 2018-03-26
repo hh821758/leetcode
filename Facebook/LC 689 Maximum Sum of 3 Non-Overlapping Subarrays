@@ -1,0 +1,42 @@
+LC 689 Maximum Sum of 3 Non-Overlapping Subarrays
+
+Facebook
+
+Hard
+
+下面的解法是利用了dp的思路。
+设总的array长度为N，dp[i][j]记录的是当截止点为index为j-1时，已经计算过的i个subarray的总和最大值。题目要求三个subarray，针对第i个长度为k的subarray，总共有N-2k个选择，针对每个选择，比方说在index j处截止的一段subarray，算一下这个subarray的sum，加上dp[i-1][j-k+1], 如果发现加和比dp[i][j]还要大，说明当前选取的subarray能保证比之前选取到的方法更优，从而更新dp[i][j+1]。同时记得全程维护最大加和时的index选择，也要用dp的方式记录下来。
+
+class Solution {
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        int[] sums = new int[nums.length+1];
+        int[][] dp = new int[4][nums.length+1];
+        int[][] id = new int[3][nums.length+1];
+        
+        int temp = 0;
+        for(int i = 0; i<nums.length; i++){
+            temp += nums[i];
+            sums[i+1] = temp;
+        }
+        
+        for(int i = 1; i<4; i++){
+            for(int j=i*k-1;j<nums.length-(3-i)*k;j++){
+                int max = sums[j+1] - sums[j-k+1] + dp[i-1][j-k+1];
+                if(max>dp[i][j]){
+                    dp[i][j+1]=max;
+                    id[i-1][j]=j-k+1;
+                }else{
+                    dp[i][j+1]=dp[i][j];
+                    id[i-1][j]=id[i-1][j-1];
+                }
+            }
+        }
+        
+        int[] res = new int[3];
+        res[2]=id[2][nums.length-1];
+        res[1]=id[1][res[2]-1];
+        res[0]=id[0][res[1]-1];
+        return res;
+        
+    }
+}

@@ -1,0 +1,32 @@
+LC 69 Sqrt(x)
+
+Facebook
+
+medium
+
+这个题有几种不同的做法：
+
+方法1：任何平方数都能被表示为1+3+5+7+...的形式，可以一直算下去并用count记录加了几次，当加和等于原始数，代表count为结果，如果超过了原始数，count-1为结果。
+
+方法2：用binary search的方法，因为要求的结果是floor整数，所以算mid的时候可以(r-l)/2+l+1，移动的时候可以r=m-1。因为有算mid*mid,所以可以转化为long
+
+class Solution {
+    public int mySqrt(int x) {
+        if(x == 0) return 0;
+        long left = 1;
+        long right = x;
+        while(left<right){
+            long mid = (right-left)/2+left+1;
+            if(mid*mid == x) return (int)mid;
+            if(mid*mid < x) left=mid;
+            if(mid*mid > x) right=mid-1;
+        }
+        return (int)left;
+    }
+}
+
+方法三：牛顿法
+long r = x;
+    while (r*r > x)
+        r = (r + x/r) / 2;
+    return (int) r;

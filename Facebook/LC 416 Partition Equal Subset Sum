@@ -1,0 +1,43 @@
+LC 416 Partition Equal Subset Sum
+
+Facebook
+
+Medium
+
+这个题也是比较典型的0/1 knapsack问题。经分析，发现题目要找的是一个subset，subset满足加和为总加和的1/2，即找一个subset并使得subset的加和为固定值。
+helper的部分是用两个dp array来做新旧交替，传统的0/1 knapsack问题会用dp[i][j]
+
+class Solution {
+    
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        int max = 0;
+        for(int num:nums){
+            sum+=num;
+            max = Math.max(num,max);
+        }
+        if(sum%2>0 || max>sum/2) return false;
+        if(max == sum/2) return true;
+        boolean[] used = new boolean[nums.length];
+        return helper(nums, sum/2);
+        
+    }
+    
+    
+    public boolean helper(int[] nums, int target){
+        boolean[] dp = new boolean[target+1];
+        dp[0]=true;
+        for(int num:nums){
+            boolean[] dpn = new boolean[target+1];
+            dpn[0]= true;
+            for(int j=1;j<=target;j++){
+                
+                if(j<num) dpn[j] = dp[j];
+                else dpn[j] = dp[j-num];
+            }
+            if(dpn[target] == true) return true;
+            dp = dpn;
+        }
+        return false;
+    }
+}

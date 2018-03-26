@@ -1,0 +1,44 @@
+LC 523 Continuous Subarray Sum
+
+Facebook
+
+Medium
+
+要找一段subarray使sum为k的整数倍。思路比较直观，分段的modulo跟总的modulo值是一样的。注意各种corner case的处理。
+class Solution {
+    public boolean checkSubarraySum(int[] nums, int k) {
+        if(nums.length == 0||nums.length==1) return false;
+        int[] sums = new int[nums.length];
+        
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        map.put(0,-1);
+        for(int i =0 ;i<sums.length;i++){
+            if(i == 0) sums[0] = nums[0];
+            else sums[i] = sums[i-1]+nums[i];
+            int mod = (k==0)?sums[i]:sums[i]%k;
+            if(map.containsKey(mod)){
+                if(i - map.get(mod)>1) return true;
+            }else{
+                map.put(mod, i);
+            }
+        }
+        return false;
+    }
+}
+
+简化解法：
+
+public boolean checkSubarraySum(int[] nums, int k) {
+    Map<Integer, Integer> map = new HashMap<Integer, Integer>(){{put(0,-1);}};;
+    int runningSum = 0;
+    for (int i=0;i<nums.length;i++) {
+        runningSum += nums[i];
+        if (k != 0) runningSum %= k; 
+        Integer prev = map.get(runningSum);
+        if (prev != null) {
+            if (i - prev > 1) return true;
+        }
+        else map.put(runningSum, i);
+    }
+    return false;
+}

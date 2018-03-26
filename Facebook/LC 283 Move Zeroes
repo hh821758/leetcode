@@ -1,0 +1,18 @@
+LC 283 Move Zeroes
+
+Facebook
+
+Easy
+
+比较巧妙，只需要一个变量，记录下一个非零数放在哪里，然后走完整个array后，该变量之后的所有数全部再设为0即可。
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int pos = 0;
+        for(int num:nums){
+            if(num!=0) nums[pos++] = num;
+        }
+        while(pos<nums.length){
+            nums[pos++] = 0;
+        }
+    }
+}

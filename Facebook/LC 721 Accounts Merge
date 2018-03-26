@@ -1,0 +1,63 @@
+LC 721 Accounts Merge
+
+Facebook
+
+Medium
+
+非常典型的Union Find题目。
+思路：
+1. 初始化每个element的parent mapping。因为这里每个email是string，所以用hashmap来记录比较方便。
+2. 依次处理每个account信息，选取每个account中的第一个email的parent作为当前email list中所有email的parents的公共parents，这里都是要recuresively获得每个email的parent，而不是email自己
+3. 遍历所有email，根据email的parent，把相同parent的email都放在同一个data structure里面。题目要求最后按字母顺序返回email，所以这个data structure可以选择具有排序功能的，比如说TreeSet。
+
+class Solution {
+    HashMap<String,String> parents = new HashMap<String,String>();
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        HashMap<String,String> owners = new HashMap<String,String>();
+        HashMap<String, TreeSet<String>> unions = new HashMap<String, TreeSet<String>>();
+        
+        for(List<String> account:accounts){
+            for(int i = 1;i<account.size();i++){
+                owners.put(account.get(i),account.get(0));
+                parents.put(account.get(i),account.get(i));
+            }
+        }
+        
+        for(List<String> account:accounts){
+            String p = findParent(account.get(1));
+            for(int i = 2;i<account.size();i++){
+                parents.put(findParent(account.get(i)), p);
+            }
+        }
+        
+        for(List<String> account:accounts){
+            for(int i = 1;i<account.size();i++){
+                String p = findParent(account.get(i));
+                if(!unions.containsKey(p)){
+                    unions.put(p, new TreeSet<String>());
+                }
+                unions.get(p).add(account.get(i));
+            }
+        }
+        
+        List<List<String>> result = new ArrayList<List<String>>();
+        
+        Iterator<String> itr = unions.keySet().iterator();
+        while(itr.hasNext()){
+            String key = itr.next();
+            String owner = owners.get(key);
+            List<String> list = new ArrayList<String>();
+            list.add(owner);
+            for(String email:unions.get(key)){
+                list.add(email);
+            }
+            result.add(list);
+        }
+        
+        return result;
+    }
+    
+    public String findParent(String email){
+        return (parents.get(email).equals(email))?email:findParent(parents.get(email));
+    }
+}

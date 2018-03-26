@@ -1,0 +1,26 @@
+LC 275 H-Index II
+
+Facebook
+
+Medium
+
+class Solution {
+    public int hIndex(int[] citations) {
+        
+        int l = 0;
+        int r = citations.length-1;
+        while(l<r){
+            int mid = (r-l)/2+l;
+            // citations[mid]是当前点观察的citation值
+            // citations.length-mid是大于等于当前citation值得文章数量。
+            // 所以当citation小于文章数量时候，文章数超过h-index，需要提高citation值并减少文章数量，所以要l=mid+1
+            if(citations[mid]<citations.length-mid){
+                l = mid+1;
+            }else{
+                r = mid;
+            }
+        }
+        
+        return (r>=0 && citations[r]>0)?citations.length-r:0;
+    }
+}

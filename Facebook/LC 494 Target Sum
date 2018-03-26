@@ -1,0 +1,58 @@
+LC 494 Target Sum
+
+Facebook
+
+Medium
+
+题目想要把一个array分成两组，一组做加法一组做减法，并让结果等于target sum。
+
+比较容易想到的是0/1 knapack的思路，用recursion或者iteration来计算所有能出现的可能性，时间是O(2^n). 不用hashmap的话，就用int[2*sum-1]，sum是所有数的加和。
+
+class Solution {
+    public int findTargetSumWays(int[] nums, int S) {
+        if(nums.length == 0) return 0;
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        map.put(0,1);
+        for(int num:nums){
+            HashMap<Integer,Integer> newmap = new HashMap<Integer, Integer>();
+            for(int key:map.keySet()){
+                int sum = key+num;
+                int min = key-num;
+                if(!newmap.containsKey(sum)){
+                    newmap.put(sum, 0);
+                }
+                if(!newmap.containsKey(min)){
+                    newmap.put(min, 0);
+                }
+                newmap.put(sum, newmap.get(sum)+map.get(key));
+                newmap.put(min, newmap.get(min)+map.get(key));
+            }
+            map = newmap;
+        }
+        return map.getOrDefault(S, 0);
+    }
+}
+
+比较数学的解法， 把nums分成两部分，P的部分全都是给+，N的部分都是-，于是有：
+                  sum(P) - sum(N) = target
+sum(P) + sum(N) + sum(P) - sum(N) = target + sum(P) + sum(N)
+                       2 * sum(P) = target + sum(nums)
+                           sum(P) = (target + sum(nums)) / 2
+让变量sum=(target + sum(nums)) / 2, 所以问题变成了找一个subset可以让加和为sum。
+dp的部分写法比较有技巧，dp记录的是从0到sum分别有多少种方法。
+
+public int findTargetSumWays(int[] nums, int s) {
+        int sum = 0;
+        for (int n : nums)
+            sum += n;
+        return sum < s || (s + sum) % 2 > 0 ? 0 : subsetSum(nums, (s + sum) >>> 1); 
+    }   
+
+    public int subsetSum(int[] nums, int s) {
+        int[] dp = new int[s + 1]; 
+        dp[0] = 1;
+        for (int n : nums)
+            for (int i = s; i >= n; i--)
+                dp[i] += dp[i - n]; 
+        return dp[s];
+    } 

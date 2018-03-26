@@ -1,0 +1,79 @@
+LC 117 Populating Next Right Pointers in Each Node II
+
+Facebook
+
+Medium
+
+这个题最容易想到的方法就是进行level order traversal，然后对每层的node进行连接，这样的方法最多会用到2/n的空间。
+public class Solution {
+    public void connect(TreeLinkNode root) {
+        if(root == null) return;
+        
+        LinkedList<TreeLinkNode> queue = new LinkedList<TreeLinkNode>();
+        queue.offer(root);
+        TreeLinkNode pre = null;
+        int count = queue.size();
+        while(queue.size()>0){
+            TreeLinkNode n = queue.poll();
+            if(pre != null) pre.next = n;
+            count--;
+            if(n.left!=null) queue.offer(n.left);
+            if(n.right!=null) queue.offer(n.right);
+            if(count==0){
+                pre = null;
+                count = queue.size();
+            }else{
+                pre = n;
+            }
+        }
+    }
+}
+
+另外一个方法，设现在准备连的层为k，已经知道k-1层被连好了，当前要连的点是k-1层点的子，如果左子和右子都处理完，那么k层的下一个点一定是k-1层父节点的next点的子。所以，可以用几个pointer来提供这些信息：
+
+1. head， 指向下一层中的第一个点。
+2. pre，表示下一层中当前观察点之前的点。如果pre为空，则当前处理点的左子（或者没有左子时的右子）即为下一层的head，更新head
+3. cur, 表示当前层正在观察的点，初始化为root
+
+public class Solution {
+    
+    //based on level order traversal
+    public void connect(TreeLinkNode root) {
+
+        TreeLinkNode head = null; //head of the next level
+        TreeLinkNode prev = null; //the leading node on the next level
+        TreeLinkNode cur = root;  //current node of current level
+
+        while (cur != null) {
+            
+            while (cur != null) { //iterate on the current level
+                //left child
+                if (cur.left != null) {
+                    if (prev != null) {
+                        prev.next = cur.left;
+                    } else {
+                        head = cur.left;
+                    }
+                    prev = cur.left;
+                }
+                //right child
+                if (cur.right != null) {
+                    if (prev != null) {
+                        prev.next = cur.right;
+                    } else {
+                        head = cur.right;
+                    }
+                    prev = cur.right;
+                }
+                //move to next node
+                cur = cur.next;
+            }
+            
+            //move to next level
+            cur = head;
+            head = null;
+            prev = null;
+        }
+        
+    }
+}

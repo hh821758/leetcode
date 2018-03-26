@@ -1,0 +1,61 @@
+LC 301 Remove Invalid Parentheses
+
+Facebook
+
+Hard
+
+这个题是真的难，基本思路上比较好理解，从左到右，用变量count记录左右括号数，每次count<0时，说明invalid，就必须从当前观察的substring中删除掉一个右括号。然后把删掉一个右括号后的substring放到recursion里。从左到右处理完后，再可以从右到左处理，依然用变量count记录左右括号数，每次count<0时，说明invalid，必须从当前观察的substring中删除掉一个左括号，然后继续recursion。
+
+小技巧1：通过用char[]{'(',')'}和char[]{')','（'}的切换，来避免重复代码
+小技巧2：删除括号的时候，删除连续相同括号中的第一个，然后把index传给后面的recursion里，后面的recursion只能在该index后面删除括号。
+小技巧3：注意recursion中index的传递，因为string被删除了一个char，所以index相应都会减1.
+小技巧4：如果在最外层的iteration中出现了count<0的情况，必然会有更深层的recursion出现，在处理完深层的recursion后，要立即break掉外层的iteration(或者直接return)。如果没有出现count<0, 说明成功走到了string的末尾，这时候要判断是加入结果还是reverse后继续处理。
+小技巧5：假设当前string是原始顺序，reverse后可以直接放入recurison。假设当前string是reverse后的string，再reverse一下后就可以放入结果的list中。
+class Solution {
+    List<String> result = new ArrayList<String>();
+    public List<String> removeInvalidParentheses(String s) {
+        
+
+        helper(s, 0, 0, new char[]{'(',')'});
+        return result;
+    }
+    // s: 当前观察的string
+    // start: 起始index，从这里往后判断是否valid
+    // last: 上次删除括号的位置
+    // pair: 括号构成
+    public void helper(String s, int start, int last, char[] pair){
+        int count = 0;
+        boolean loop = false;
+        for(int i=start;i<s.length();i++){
+        	// 用count来简易判断invalid
+            if(s.charAt(i) == pair[0]) count++;
+            else if(s.charAt(i) == pair[1]) count--;
+            
+            //count<0时，要进行recursion
+            if(count < 0){
+                int j = last;
+                for(j=last;j<=i;j++){
+                	// 要删掉的是当前可删范围内的第一个位置，或者是第一个符合该删除的括号类型的括号位置
+                    if(s.charAt(j) == pair[1] && (j==last || s.charAt(j-1)!=pair[1])){
+                        helper(s.substring(0,j)+s.substring(j+1,s.length()), i, j, pair);
+                    }
+                }
+                // 用来在之后的代码中判断是否有过count<0的判断，如果没有，说明成功走到了string最后，没有深层recursion
+                loop = true;
+                // 当有recurison出现的时候，不再对当前iteration继续处理。
+                break;
+            }
+        }
+        if(loop) return;
+        String reversed = new StringBuilder(s).reverse().toString();
+        // 判断是否已经被reverse过
+        if(pair[0] == '('){
+            //need reverse
+            helper(reversed, 0, 0, new char[]{')','('});
+        }else{
+            result.add(reversed);
+        }
+    }
+    
+    
+}

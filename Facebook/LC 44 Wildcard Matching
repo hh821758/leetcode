@@ -1,0 +1,42 @@
+LC 44 Wildcard Matching
+
+Facebook
+
+Hard
+
+有?和*的regular expression
+?表示任意单个char
+*表示任意长度任意sequence
+
+if s[i] == p[j] or p[j] == '?': dp[i+1][j+1] = dp[i][j]
+
+if p[j] = '*':
+	这时去找s中在i之前只有index能满足dp[index+1][j],那么s在index之后的sequence都可以用*来map。
+
+class Solution {
+    public boolean isMatch(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        for(int j=0;j<p.length();j++){
+            if(p.charAt(j) == '*'){
+                dp[0][j+1] = dp[0][j];
+            }
+        }
+        for(int i=0;i<s.length();i++){
+            for(int j=0;j<p.length();j++){
+                char c1 = s.charAt(i);
+                char c2 = p.charAt(j);
+                if(c1 == c2 || c2 == '?'){
+                    dp[i+1][j+1] = dp[i][j];
+                }else if(c2=='*'){
+                    for(int k=i;k>=-1;k--){
+                        if(dp[k+1][j]){
+                            dp[i+1][j+1] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+}

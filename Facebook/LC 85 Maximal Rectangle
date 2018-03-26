@@ -1,0 +1,42 @@
+LC 85 Maximal Rectangle
+
+Facebook
+
+Hard
+
+这道题必须要掌握的方法之一，就是找Largest Rectangle in Histogram. 分层来找，每一层都相当于能看到一个新的histogram。
+
+小技巧，定义h[]的长度比原矩阵宽度大1，并默认h[]最后一位为0，这样可以方便的在循环中重复利用代码，把stack中残留的数全部处理掉。
+
+
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if(matrix.length == 0 || matrix[0].length==0) return 0;
+
+        int[] h = new int[matrix[0].length+1];
+        int result = Integer.MIN_VALUE;
+        for(int i=0;i<matrix.length;i++){
+            for(int j=0;j<matrix[0].length;j++){
+                h[j] = (matrix[i][j]=='0')?0:(h[j]+1);
+            }
+            Stack<Integer> stack = new Stack<Integer>();
+            for(int j=0;j<h.length;j++){
+                // 等于stack最顶值得时候也要push进去，
+                if(stack.isEmpty() || h[j]>=h[stack.peek()]){
+                    stack.push(j);
+                }else{
+                    while(!stack.isEmpty() && h[j]<h[stack.peek()]){
+                        int peek=stack.pop();
+                        //stack为空的时候，当前观察数占用的范围是从0到j-1，长度为j
+                        //stack不为空时，范围是从stack.peek()+1到j-1，长度为j-stack.peek()-1
+                        int max = h[peek]*((stack.isEmpty())?j:(j-stack.peek()-1));
+                        result = Math.max(result, max);                        
+                    }
+                    //在while loop中，并不对j处的小值进行计算，而是放入stack中。
+                    stack.push(j);
+                }
+            }
+        }
+        return result;
+    }
+}

@@ -1,0 +1,45 @@
+LC 268 Missing Number
+
+Facebook
+
+Easy
+
+这个题有多种解法：
+
+方法1：把每个值放到它应该在的地方，然后再次扫描，找到第一个不对的数。这种方法能针对从0到n缺少不止一个数，而且array中的数字可以是任意数。
+
+class Solution {
+    public int missingNumber(int[] nums) {
+        for(int i=0;i<nums.length;i++){
+            while(nums[i]!=i && nums[i]<nums.length){
+                int tmp = nums[i];
+                nums[i] = nums[tmp];
+                nums[tmp] = tmp;
+            }
+        }
+        
+        for(int i=0;i<nums.length;i++){
+            if(nums[i]!=i){
+                return i;
+            }
+        }
+        return nums.length;
+    }
+}
+
+方法2：bit manipulation，用亦或计算。因为题目已经明确交代了array中的数必然属于0-n，假设去掉的那个数是x，则有：
+n1 = 0^1^2....^(x-1)^x^(x+1)...^n
+n2 = 0^1^2....^(x-1)^(x+1)...^n
+n1^n2 = x
+
+亦或计算顺序并不重要，所以可以有如下结果：
+
+public int missingNumber(int[] nums) {
+
+    int xor = 0;
+	for (int i = 0; i < nums.length; i++) {
+		xor = xor ^ i ^ nums[i];
+	}
+
+	return xor ^ (nums.length+1);
+}

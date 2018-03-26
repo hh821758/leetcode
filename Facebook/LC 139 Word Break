@@ -1,0 +1,30 @@
+LC 139 Word Break
+
+Facebook
+
+Medium
+
+一开始使用了backtracking的方法，但是超时了。因为在一个string中如果有同样的substring，会被重复process。所以使用dp的方法。
+
+class Solution {
+
+    public boolean wordBreak(String s, List<String> wordDict) {
+        HashSet<String> set = new HashSet<String>();
+        for(String str:wordDict){
+            set.add(str);
+        }
+        boolean[][] b = new boolean[s.length()][s.length()];
+        for(int l=1;l<=s.length();l++){
+            for(int i=0;i<s.length()-l+1;i++){
+                if(set.contains(s.substring(i, i+l))) b[i][i+l-1] = true;
+                else{
+                    for(int j=i;j<=i+l-2;j++){
+                        if(b[i][j] && b[j+1][i+l-1]) b[i][i+l-1] = true;
+                    }
+                }
+            }
+        }
+        return b[0][s.length()-1];
+    }
+
+}

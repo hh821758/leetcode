@@ -1,0 +1,37 @@
+LC 670 Maximum Swap
+
+Facebook
+
+Medium
+
+思路比较巧妙，我用的方法是：
+从小位数看起，记录当前遇到的最大值和最大值的位置，如果发现一个小于最大值的数，说明这是一个potential swap。继续往高位数看，仍然更新最大值和最大值的位置，如果又发现一个小于当前最大值的数，这说明又发现一个potential swap，之前的potential swap应该作废掉。
+
+class Solution {
+    public int maximumSwap(int num) {
+        String s = String.valueOf(num);
+        int max = -1;
+        int replace = -1;
+        int p1 = -1;
+        int p2 = -1;
+        
+        int max_pos = -1;
+        for(int i=s.length()-1;i>=0;i--){
+            if(s.charAt(i)-'0'>max){
+                max = s.charAt(i)-'0';
+                max_pos = i;
+            }else if(s.charAt(i)-'0' == max){
+                continue;
+            }else{
+                p1 = i;
+                p2 = max_pos;
+                replace = max;
+            }
+        }
+        if(p1==-1) return num;
+        StringBuilder sb = new StringBuilder(s);
+        sb.setCharAt(p2, sb.charAt(p1));
+        sb.setCharAt(p1, (char)(replace+'0'));
+        return Integer.valueOf(sb.toString());
+    }
+}

@@ -1,0 +1,38 @@
+LC 621 Task Scheduler
+
+Facebook
+
+Medium
+
+思路非常巧妙。先找到每个char的出现频率，进行排序，然后分情况进行观察：
+
+(count[count.length-1]-1) * (n+1) + res:
+n+1的部分是指从出现第一个char到第二次见到第一个char之前，长度至少是n+1。
+count[count.length-1]-1的部分是指重复的block出现次数，
+res的部分，是最后多余出来的部分，在这之后不许要补充xx
+出现次数最多的char可以构成一个pattern，
+
+例如1: c1c2xxxxc1c2xxxxc1c2, 其中重复的部分长度就是n+1， c1 c2代表出现频率最高的两个char。
+无法确定是否能够将除去c1c2的数有效的放入xxxx中。不过可以确定的是，如果剩余的数数量有限，那么就能够放入这些xxxx里，但是如果剩余的其他数很多，即tasks.length足够大时，结果就会以tasks.length为准。
+
+假设频率最高的char总共有4种，但是n=2，这时上述例子中的block将不再成立，此时将不再有x，tasks.length也会有更大的值。
+例如2: c1 c2 c3 c4 c5 c1 c2 c3 c4 c6 c1 c2 c3 c4
+
+如果给定的array长度很大，超过了
+如果n+1是大于等于总的字符串种类时
+
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        int[] count = new int[26];
+        for(char c:tasks){
+            count[c-'A']++;
+        }
+        Arrays.sort(count);
+        int res = 0;
+        for(int i=count.length-1;i>=0;i--){
+            if(count[i]!=count[count.length-1]) break;
+            res++;
+        }
+        return Math.max(tasks.length, (count[count.length-1]-1)*(n+1)+res);
+    }
+}

@@ -1,0 +1,74 @@
+LC 269 Alien Dictionary
+
+Facebook
+
+Hard
+
+这个题最关键的点是要发现这其实是个判断directed graph是否valid的题目。
+第一种方法是利用DFS思路，这时需要以下两个数据结构：
+1. 利用一个boolean[i][j]来记录是否能从i到j.
+2. 利用一个int[]记录每个字母的访问情况， -1为并不在处理的图中出现，0为尚未访问，1为正在访问中，2为已经访问完成。
+
+最后print图的时候，可以用dfs的方式从底层print起，当某个字母没有directed neighbor或者其所有neighbor都已经访问结束，就可以把该字母放入结果中，并标记其为已经访问完成。
+
+第二种方法是利用BFS思路，这时要用另一种数据结构：
+1. HashMap<Character, Set<Character>> 记录要某个字母之后打印出来的字母集合。
+2. HashMap<Character, Integer> 记录在某个字母前面必须要print出来的字母数量。
+
+print的时候，看HashMap<Character, Integer>中value为0的字母，将该字母放入queue中，然后根据HashMap<Character, Set<Character>>获得与该字母相连并比其大的其他邻居字母，更新这些邻居字母在HashMap<Character, Integer> 中的value值（-1），如果遇到有新的value变成0的值，说明已经不再有其他字母比这个邻居字母要小，就可以把这个邻居字母加入queue中。
+注意该情况下判断invalid，是通过最终结果长度是否与HashMap的size相同。如果结果长度不够，说明有至少一个字母在HashMap<Character, Integer>中的value大于0，出现了循环dependency。
+
+
+class Solution {
+    boolean[][] adj = new boolean[26][26];
+    int[] visited = new int[26];
+    
+    public String alienOrder(String[] words) {
+        Arrays.fill(visited, -1);
+        
+        for(String word:words){
+            for(char c:word.toCharArray()){
+                visited[c-'a'] = 0;
+            }
+        }
+        
+        for(int i=0;i<words.length-1;i++){
+            String word1 = words[i];
+            String word2 = words[i+1];
+            int l = Math.min(word1.length(), word2.length());
+            for(int j = 0;j<l;j++){
+                char c1 = word1.charAt(j);
+                char c2 = word2.charAt(j);
+                if(c1!=c2){
+                    adj[c1-'a'][c2-'a']=true;
+                    break;
+                }
+                if(j == l-1 && word1.length()>word2.length()) return "";
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<visited.length;i++){
+            if(visited[i] == 0){
+                if(!dfs(i, sb)) return "";
+            }
+        }
+        
+        return sb.reverse().toString();
+    }
+    
+    public boolean dfs(int i, StringBuilder sb){
+        visited[i] = 1;
+        boolean[] neighbors = adj[i];
+        for(int j = 0;j<neighbors.length;j++){
+            boolean neighbor = neighbors[j];
+            if(!neighbor) continue;
+            if(visited[j] == 1) return false;
+            if(visited[j] == 0){
+                if(!dfs(j, sb)) return false;
+            }
+        }
+        visited[i] = 2;
+        sb.append((char)(i+'a'));
+        return true;
+    }
+}

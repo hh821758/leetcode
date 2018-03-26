@@ -1,0 +1,29 @@
+LC 274 H-Index
+
+Facebook
+
+Medium
+
+思路比较巧妙，首先，h-index的值不可能大过文章数量，所以当citation的值超过文章数量的时候，超过的部分就没有意义了。所以可以用一个长为文章数量+1的array来记录不同citation值得文章有多少。之后从高citation开始向下开做iteration，设当前观察的citation值为i，则要保证之前的iteration观察过得总文章数量至少为i个，即数量要>=i。找到的第一个满足条件的citation值，即为符合条件的最大citation值。
+class Solution {
+    public int hIndex(int[] citations) {
+        int l = citations.length;
+        if(l==0) return 0;
+        int[] count = new int[l+1];
+        for(int num:citations){
+            if(num>=l){
+                count[l]++;
+            }else{
+                count[num]++;
+            }
+        }
+        
+        int pre = 0;
+        for(int i=l;i>=0;i--){
+            pre += count[i];
+            if(pre>=i) return i;
+        }
+        
+        return 0;
+    }
+}

@@ -1,0 +1,53 @@
+LC 91 Decode Ways
+
+Facebook
+
+Medium
+
+比较容易想到用dp的思路来解决问题。
+
+下面代码是从左到右看的思路。因为decode一个字符可能需要1到2个数字，所以需要有两个变量来记录之前的decode方法数量。
+设只用当前i处数字来decode，如果当前数字能被decode，则这种情况下decode的方法跟从头decode到i-1处的方法数是相同的。
+设用当前i处数字和i-1处数字构成一个2位数来decode，如果满足这个2位数能被decode，则这种情况下decode的方法跟从头到i-2处的方法数是相同的。
+因为只需要有i-2和i-1处的decode方法数，所以可以简化dp只需要记录两个变量。
+注意在初始处，默认没有任何数字的时候是有唯一decode方式，以便于后续计算。
+
+class Solution {
+    public int numDecodings(String s) {
+        if(s ==null || s.length()==0) return 0;
+        int num1 = (s.charAt(0) == '0')?0:1;
+        int num2 = 1;
+        for(int i=1;i<s.length();i++){
+            int one = Integer.valueOf(s.substring(i,i+1));
+            int two = Integer.valueOf(s.substring(i-1, i+1));
+            int tmp = 0;
+            if(one>0 && one<=9){
+                tmp += num1;
+            }
+            if(two<=26 && two>=10){
+                tmp += num2;
+            }
+            num2 = num1;
+            num1 = tmp;
+        }
+        return num1;
+    }
+}
+
+下面代码是discuss中的从右到左，这种思路很难一上来就想到，出乎意料的简化了问题：
+public class Solution {
+    public int numDecodings(String s) {
+        int n = s.length();
+        if (n == 0) return 0;
+        
+        int[] memo = new int[n+1];
+        memo[n]  = 1;
+        memo[n-1] = s.charAt(n-1) != '0' ? 1 : 0;
+        
+        for (int i = n - 2; i >= 0; i--)
+            if (s.charAt(i) == '0') continue;
+            else memo[i] = (Integer.parseInt(s.substring(i,i+2))<=26) ? memo[i+1]+memo[i+2] : memo[i+1];
+        
+        return memo[0];
+    }
+}

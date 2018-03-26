@@ -1,0 +1,29 @@
+LC 128 Longest Consecutive Sequence
+
+Facebook
+
+Hard
+
+这个题的难点就是如何处理信息使得时间复杂度只有O(n). 这里用到的方法，是利用hashmap来记录某个数能构成的连续长度为多少。
+
+假设处理数n的时候，map中没有数n存在，可以看是否存在n-1和n+1。如果存在n-1，则说明n-1向左至少已经有一个数存在，而且n-1是那些数的右边界，同理如果存在n+1，n+1是另外一组数的左边界，如果n-1或n-1不存在，说明n左边或者n右边当前情况下并没有其他数。
+
+每次更新map时，算出加入n后能构成的sequence长度，并更新该sequence左右边界key->value,让value为新的sequence长度。
+
+class Solution {
+    public int longestConsecutive(int[] nums) {
+        HashMap<Integer, Integer> map = new HashMap<Integer,Integer>();
+        int result = 0;
+        for(int n:nums){
+            if(map.containsKey(n)) continue;
+            int left = map.getOrDefault(n-1, 0);
+            int right = map.getOrDefault(n+1, 0);
+            int len = left+right+1;
+            result = Math.max(result, len);
+            map.put(n, len); //必须有这一步, 是为了确保map记录下已经访问过n这个事实，具体是多少数不再重要，因为我们主要关注边界。
+            map.put(n-left, len);
+            map.put(n+right, len);
+        }
+        return result;
+    }
+}

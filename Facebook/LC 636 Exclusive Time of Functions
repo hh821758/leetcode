@@ -1,0 +1,28 @@
+LC 636 Exclusive Time of Functions
+
+Facebook
+
+Medium
+
+思路比较巧妙，用单个变量记录下上个log记载的时间点为pre，用stack记录下之前正在运行的function id，则新log出现时，新的时间点为t，一定代表了stack顶端的function运行了t-pre的时间长度。当log是start的时候，要把新的function id放入stack，当end的时候，就pop stack，代表重新开始运行stack顶的function
+
+class Solution {
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] time = new int[n];
+        Stack<Integer> stack = new Stack<Integer>();
+        int pre = 0;
+        for(String s:logs){
+            
+            String[] vals = s.split(":");
+            if(!stack.isEmpty()) time[stack.peek()] += Integer.valueOf(vals[2]) - pre;
+            pre = Integer.valueOf(vals[2]);
+            if(vals[1].equals("start")){
+                stack.push(Integer.valueOf(vals[0]));
+            }else{
+                time[stack.pop()]++;
+                pre++;
+            }
+        }
+        return time;
+    }
+}

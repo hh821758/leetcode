@@ -1,0 +1,66 @@
+LC 261 Graph Valid Tree
+
+Facebook
+
+Medium
+
+一种方法是构建一个undirected graph，只要没有循环就说明能形成tree结构。为了遍历undirected graph，用boolean[][] neighbors记录任意两点之间是否相连，然后可以dfs判断循环，dfs中找neighbor的时候，要去掉来源点，所以recursion中还要记录来源点。
+
+另一种方法是利用union find，依次处理已有的edges关系，当发现处理中的两点有相同的parent时，说明出现了循环。
+
+class Solution {
+    public boolean validTree(int n, int[][] edges) {
+        boolean[] visited = new boolean[n];
+        boolean[][] neighbors = new boolean[n][n];
+        for(int[] edge:edges){
+            if(edge[0] == edge[1]) return false;
+            neighbors[edge[0]][edge[1]] = true;
+            neighbors[edge[1]][edge[0]] = true;
+        }
+        if(!valid(0, visited, neighbors, -1)) return false;
+        for(int i=0;i<n;i++){
+            if(!visited[i]) return false;
+        }
+        return true;
+    }
+    
+    public boolean valid(int i, boolean[] visited, boolean[][] adj, int from){
+        visited[i] = true;
+        for(int j=0;j<visited.length;j++){
+            if(!adj[i][j] || j == from) continue;
+            if(visited[j]) return false;
+            else{
+                if(!valid(j, visited, adj, i)) return false;
+            }
+        }
+        return true;
+    }
+}
+
+public class Solution {
+    public boolean validTree(int n, int[][] edges) {
+        // initialize n isolated islands
+        int[] nums = new int[n];
+        Arrays.fill(nums, -1);
+        
+        // perform union find
+        for (int i = 0; i < edges.length; i++) {
+            int x = find(nums, edges[i][0]);
+            int y = find(nums, edges[i][1]);
+            
+            // if two vertices happen to be in the same set
+            // then there's a cycle
+            if (x == y) return false;
+            
+            // union
+            nums[x] = y;
+        }
+        
+        return edges.length == n - 1;
+    }
+    
+    int find(int nums[], int i) {
+        if (nums[i] == -1) return i;
+        return find(nums, nums[i]);
+    }
+}

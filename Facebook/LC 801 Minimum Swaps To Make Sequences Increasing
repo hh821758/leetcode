@@ -1,0 +1,40 @@
+LC 801 Minimum Swaps To Make Sequences Increasing
+
+Facebook
+
+Medium
+
+非常巧妙的题，利用dp的思路来解:
+
+
+
+class Solution {
+    public int minSwap(int[] A, int[] B) {
+        int[] swap = new int[A.length];
+        int[] noswap = new int[A.length];
+        
+        swap[0] = 1;
+
+        for(int i=1;i<A.length;i++){
+        	// 初始化两个值为不可能达到的最大值。后面的两个if是分两种情况，不同情况下会获得不同的swap[i]和
+        	// noswap[i],同时也可能出现其中的一种或两种if条件无法达成，如果不赋值，任其为0，那么可能后面
+        	// 会出现无法判断0是因为没有方法让sequence valid还是因为不符合if条件而未进行计算。
+            swap[i]=A.length;
+            noswap[i]=A.length;
+
+            if(B[i]>B[i-1] && A[i]>A[i-1]){
+            	//这种情况，要么i和i-1都swap，要么i和i-1都不swap
+                swap[i]=swap[i-1]+1;
+                noswap[i] = noswap[i-1];
+            }
+            if(B[i]>A[i-1] && A[i]>B[i-1]){
+            	//这种情况，要么i动i-1不动，要么i不动i-1动
+            	//这里用Math.min来简易比较，一种可能是前面的if成立，算出了一些结果，跟当前if中的结果作比较
+            	//另一种可能是前面if不成立，只有当前if中的计算结果跟A.length做比较，其实就是只看当前if结果的意思。
+                swap[i] = Math.min(swap[i],noswap[i-1]+1);
+                noswap[i] = Math.min(noswap[i],swap[i-1]);
+            }
+        }
+        return Math.min(swap[A.length-1],noswap[A.length-1]);
+    }
+}

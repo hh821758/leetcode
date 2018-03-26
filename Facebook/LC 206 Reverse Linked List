@@ -1,0 +1,32 @@
+LC 206 Reverse Linked List
+
+两种经典方法来reverse linked list
+
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if(head==null) return null;
+        ListNode pre = null;
+        ListNode cur = head;
+        while(cur!=null){
+            ListNode next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+        }
+        return pre;
+    }
+}
+
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if(head==null) return null;
+        return link(null, head);
+    }
+    
+    public ListNode link(ListNode pre, ListNode cur){
+        if(cur == null) return pre;
+        ListNode next = cur.next;
+        cur.next = pre;
+        return link(cur, next);
+    }
+}

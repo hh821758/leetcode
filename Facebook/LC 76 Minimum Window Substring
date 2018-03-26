@@ -1,0 +1,47 @@
+LC 76 Minimum Window Substring
+
+Facebook
+
+Hard
+
+比较经典的sliding window，window动态变化。利用map来记录character的变化情况。可以是HashMap，也可以用int[] array来记录某个char的出现次数，同时需要用另外一个变量来记录是否所以需要的char都已经出现在当前window中，以及在缩小window时，是否删掉了一个char导致不再满足条件。
+
+class Solution {
+    public String minWindow(String s, String t) {
+        int[] count = new int[256];
+        int result = Integer.MAX_VALUE;
+        int resl = 0;
+        int resr = -1;
+        int total = 0;
+        for(char c: t.toCharArray()){
+            if(count[c-'A']++ == 0){
+                total++;
+            }
+        }
+        
+        int left = 0;
+        int right = -1;
+        for(int i=0;i<s.length();i++){
+            char c = s.charAt(i);
+            right++;            
+            if(--count[c-'A']==0){
+                total--;
+            }
+            if(total == 0){
+                while(total == 0){
+                    if(right - left +1 < result){
+                        result = right - left + 1;
+                        resl = left;
+                        resr = right;
+                    }
+                    char c2 = s.charAt(left++);
+                    if(++count[c2-'A']>0){
+                        total++;
+                        break;
+                    }
+                }
+            }
+        }
+        return s.substring(resl, resr+1);
+    }
+}

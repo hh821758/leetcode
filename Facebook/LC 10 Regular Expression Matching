@@ -1,0 +1,60 @@
+LC 10 Regular Expression Matching
+
+Facebook
+
+Hard
+
+有*和.的regular expression。
+*表示0到多个前面的char
+.表示任意的单个char
+用dp[i+1][j+1]来记录从s的i位置到p的j位置是否能map。
+
+分析思路：
+
+if s[i] == p[j] or p[j] == '.': dp[i+1][j+1] = dp[i][j]
+
+if p[j] == '*':
+  if dp[i+1][j-1]: 不用管*前边是什么，这种情况下都是让*表示0个char，dp[i+1][j+1] = dp[i+1][j-1]
+     .......a|
+     ......|c*
+  
+  if s[i] == p[j-1] || p[j-1] == '.':
+    case 1: dp[i+1][j+1] = dp[i][j+1]
+         dp[i][j+1]成立，且在dp[i][j+1]时，p的最后翻译为n个a，那么只要翻译为n+1个a，就可以让dp[i+1][j+1]成立
+         .......|a
+         .......a*|
+         
+    case 2: dp[i+1][j+1] = dp[i+1][j]
+        dp[i+1][j]成立，*翻译做了1个：
+        .......a|
+        .......a|*
+
+
+另外要注意初始化dp[0][j]的情况，即s为空，但是p有*，这时候如果*代表了0个char，则有可能使dp[0][j]为true
+
+class Solution {
+    public boolean isMatch(String s, String p) {
+        boolean[][] dp = new boolean[s.length()+1][p.length()+1];
+        dp[0][0] = true;
+        if(s == null || p == null) return false;
+        for(int i=0;i<p.length();i++){
+            if(p.charAt(i) == '*'){
+                dp[0][i+1] = dp[0][i-1];
+            }
+        }
+        for(int i=0;i<s.length();i++){
+            for(int j=0;j<p.length();j++){
+                char c1 = s.charAt(i);
+                char c2 = p.charAt(j);
+                if(c1 == c2 || c2 == '.'){
+                    dp[i+1][j+1] = dp[i][j];
+                }else if(c2 == '*'){
+                    char c3 = p.charAt(j-1);
+                    dp[i+1][j+1] = dp[i+1][j-1] || ((c1==c3 || c3=='.') && (dp[i][j+1] || dp[i+1][j]));
+                } 
+                
+            }
+        }
+        return dp[s.length()][p.length()];
+    }
+}

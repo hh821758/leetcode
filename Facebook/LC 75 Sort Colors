@@ -1,0 +1,53 @@
+LC 75 Sort Colors
+
+Facebook
+
+Medium
+
+三色问题，下面的方法是非常经典的三个pointer的解法
+class Solution {
+    public void sortColors(int[] nums) {
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        for(int m = 0;m<nums.length;m++){
+            if(nums[m] == 0){
+                nums[m] = nums[j];
+                nums[j] = nums[i];
+                nums[i] = 0;
+                i++;
+                j++;
+                k++;
+            }else if(nums[m] == 1){
+                nums[m] = nums[j];
+                nums[j] = 1;
+                j++;
+                k++;
+                
+            }else{
+                k++;
+            }
+        }
+    }
+}
+
+下面的方法是更简洁的swap方法，比较tricky
+
+class Solution {
+    public void sortColors(int[] nums) {
+        int l = 0;
+        int r = nums.length-1;
+        
+        for(int i=0;i<nums.length;i++){
+            if(nums[i] == 0){
+                nums[i] = nums[l];
+                nums[l++] = 0;
+            }else if(nums[i] == 2){
+                if(r<i) break;
+                nums[i] = nums[r];
+                nums[r] = 2;
+                r--; i--;
+            }
+        }
+    }
+}
