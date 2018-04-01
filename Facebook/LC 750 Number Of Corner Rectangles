@@ -1,0 +1,26 @@
+LC 750 Number Of Corner Rectangles
+
+Facebook
+
+Medium
+
+思路比较巧妙
+
+选取两个row，记录在同一column上这两个row都是1的column数量，然后利用choose 2 from n的数学方法计算出这两个row内能形成的rectangle的数量
+
+class Solution {
+    public int countCornerRectangles(int[][] grid) {
+        int result = 0;
+        if(grid.length < 2 || grid[0].length<2) return 0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=i+1;j<grid.length;j++){
+                int count = 0;
+                for(int k=0;k<grid[0].length;k++){
+                    if(grid[i][k] == 1 && grid[j][k] == 1) count++;
+                }
+                result += count*(count-1)/2;
+            }
+        }
+        return result;
+    }
+}

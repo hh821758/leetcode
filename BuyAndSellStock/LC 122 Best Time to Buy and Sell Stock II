@@ -1,0 +1,16 @@
+LC 122 Best Time to Buy and Sell Stock II
+
+class Solution {
+    public int maxProfit(int[] prices) {
+    	// 之前持有股票时最大收益，初始化是指在-1天的时候，-Infinity表示买入虚空毫无收益。
+        int buy = Integer.MIN_VALUE;
+        // 之前手头没有股票时最大收益，-1天时手头没有股票，收益也为0.
+        int sell = 0;
+        for(int price:prices){
+        	// 由于允许多次买入和卖出，所以想买入时也要基于之前sell的结果。所以写sell-price
+            buy = Math.max(buy, sell-price);
+            sell = Math.max(sell, buy+price);
+        }
+        return sell;
+    }
+}

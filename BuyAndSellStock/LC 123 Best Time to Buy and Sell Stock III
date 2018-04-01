@@ -1,0 +1,21 @@
+LC 123 Best Time to Buy and Sell Stock III
+
+class Solution {
+    public int maxProfit(int[] prices) {
+    	// 2维表示的两次买入和卖出
+        int[] sell = new int[2];
+        int[] buy = new int[2];
+        Arrays.fill(buy, Integer.MIN_VALUE);
+        for(int price:prices){
+        	//第一次买入，只基于之前的第一次买入和0-price，0是指第一次买入前的sell始终为0
+            buy[0] = Math.max(buy[0], -price);
+            //第一次卖出，只基于之前的第一次卖出和第一次买入
+            sell[0] = Math.max(sell[0], buy[0]+price);
+            //第二次买入，只基于之前的第二次买入和之前的卖出
+            buy[1] = Math.max(buy[1], sell[0]-price);
+            //第二次卖出，只基于之前的第二次卖出和第二次买入
+            sell[1] = Math.max(sell[1], buy[1]+price);
+        }
+        return sell[1];
+    }
+}
