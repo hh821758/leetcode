@@ -1,0 +1,42 @@
+LC 315 Count of Smaller Numbers After Self
+
+Google
+
+Hard
+
+class Solution {
+    class TreeNode{
+        int val;
+        TreeNode left;
+        TreeNode right;
+        int dup;
+        public TreeNode(int val){
+            this.val = val;
+            dup=1;
+        }
+    }
+    public List<Integer> countSmaller(int[] nums) {
+        TreeNode root = null;
+        List<Integer> list = new ArrayList<Integer>();
+        for(int i=nums.length-1;i>=0;i--){
+            helper(nums[i],root,0, list);
+        }
+        return list;
+    }
+    
+    public TreeNode helper(int num, TreeNode root, int count, List<Integer> list){
+        if(root == null){
+            root = new TreeNode(num);
+            list.add(0, count);
+        }else{
+            if(root.val == num){
+                root.dup++;
+                list.add(0, count);
+            }else if(root.val > num){
+                root.left = helper(num, root.left, count, list);
+            }else if(root.val < num){
+                root.right = helper(num, root.right, count+root.dup, list);
+            }
+        }
+        return root;
+    }
