@@ -1,0 +1,70 @@
+LC 425 Word Squares
+
+Google
+
+Hard
+
+思路非常值得参考，比较巧妙的地方是选取第K行的String的时候，该string的prefix是前几行的string的第K个位置的char来决定的。所以given prefix能快速找出可选string的方法为好方法。一种是用HashMap的方式来记录，一种是用Trie。
+
+class Solution {
+    List<List<String>> result = new ArrayList<List<String>>();
+    int len = 0;
+    class TrieNode{
+        HashSet<String> set = new HashSet<String>();
+        char c;
+        HashMap<Character, TrieNode> map = new HashMap<Character, TrieNode>();
+        public TrieNode(char c){
+            this.c = c;
+        }
+    }
+    public List<List<String>> wordSquares(String[] words) {
+        if(words.length==0) return result;
+        len = words[0].length();
+        TrieNode root = new TrieNode('#');
+        
+        for(String word:words){
+            if(word.length()!=len) return result;
+            TrieNode head = root;
+            head.set.add(word);
+            for(int i=0;i<word.length();i++){
+                char c = word.charAt(i);
+                if(!head.map.containsKey(c)){
+                    TrieNode tmp = new TrieNode(c);
+                    head.map.put(c, tmp);
+                }
+                head = head.map.get(c);
+                head.set.add(word);
+            }
+        }
+        helper(words, new ArrayList<String>(), root);
+        return result;
+    }
+    
+    public void helper(String[] words, List<String> list, TrieNode root){
+        if(list.size() == len){
+            result.add(new ArrayList<String>(list));
+            return;
+        }
+        HashSet<String> set = getValidWords(list, root);
+        for(String word: set){
+            
+            list.add(word);
+            helper(words, list, root);
+            list.remove(list.size()-1);
+        }
+    }
+
+    public HashSet<String> getValidWords(List<String> list, TrieNode root){
+        TrieNode head = root;
+        int p = list.size();
+        for(String s:list){
+            char c = s.charAt(p);
+            if(head.map.containsKey(c)){
+                head = head.map.get(c);
+            }else{
+                return new HashSet<String>();
+            }
+        }
+        return head.set;
+    }
+}

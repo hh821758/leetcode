@@ -1,0 +1,65 @@
+LC 281 Zigzag Iterator
+
+Google
+
+Medium
+
+传统思路还是用变量来记录访问各个list的位置。更值得学习的思路是利用数据结构原本就有的iterator。
+public class ZigzagIterator {
+    
+    int[] loc;
+    int which = 0;
+    List<List<Integer>> list;
+    public ZigzagIterator(List<Integer> v1, List<Integer> v2) {
+        list = new ArrayList<List<Integer>>();
+        list.add(v1);
+        list.add(v2);
+        loc = new int[2];
+    }
+
+    public int next() {
+        
+        for(int i=0;i<loc.length;i++){
+            if(loc[which]<list.get(which).size()){
+                int result = list.get(which).get(loc[which]);
+                loc[which]++;
+                which=(which+1)%list.size();
+                return result;
+            }else{
+                which=(which+1)%list.size();
+            }
+        }
+        return -1;
+    }
+
+    public boolean hasNext() {
+        for(int i=0;i<loc.length;i++){
+            if(loc[which]<list.get(which).size()){
+                return true;
+            }else{
+                which=(which+1)%list.size();
+            }
+        }
+        return false;
+    }
+}
+
+public class ZigzagIterator {
+    LinkedList<Iterator> list;
+    public ZigzagIterator(List<Integer> v1, List<Integer> v2) {
+        list = new LinkedList<Iterator>();
+        if(!v1.isEmpty()) list.add(v1.iterator());
+        if(!v2.isEmpty()) list.add(v2.iterator());
+    }
+
+    public int next() {
+        Iterator poll = list.remove();
+        int result = (Integer)poll.next();
+        if(poll.hasNext()) list.add(poll);
+        return result;
+    }
+
+    public boolean hasNext() {
+        return !list.isEmpty();
+    }
+}

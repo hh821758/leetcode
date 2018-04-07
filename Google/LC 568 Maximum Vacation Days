@@ -1,0 +1,37 @@
+LC 568 Maximum Vacation Days
+
+Google
+
+Hard
+
+题目要求找到最多旅行的天数。由于我们只在意之前几周旅行的天数，而不在意之前到底去过哪里，所以适合用dp的方式来解决。
+
+用一维dp来记录之前一周到达任意城市的最大旅行天数。
+
+class Solution {
+    int result = 0;
+    public int maxVacationDays(int[][] flights, int[][] days) {
+        int[] total = new int[flights.length];
+        Arrays.fill(total, -1);
+        total[0] = 0;
+        for(int i=0;i<days[0].length;i++){
+            int[] total_new = new int[flights.length];
+            Arrays.fill(total_new, -1);
+            for(int j=0;j<total.length;j++){
+                for(int k=0;k<total.length;k++){
+                    if(total[j]!=-1){
+                        int tmp = (j==k || flights[j][k]==1)?(total[j]+days[k][i]):-1;
+                        total_new[k] = Math.max(tmp, total_new[k]);
+                    }
+                }
+            }
+            total = total_new;
+        }
+        int result=0;
+        for(int i=0;i<total.length;i++){
+            result = Math.max(result, total[i]);
+        }
+        return result;
+    }
+    
+}

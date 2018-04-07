@@ -1,0 +1,64 @@
+LC 317 Shortest Distance from All Buildings
+
+Google
+
+Hard
+
+经典的BFS问题，基本思路是
+1. 要有一个matrix来记录每个位置处到所有building的距离之和
+2. 要有一个matrix来记录每个位置处能有多少building能连接的到。
+3. 从每个Building开始，算BFS，更新记录总路径和的matrix
+
+我利用了原始矩阵grid来记录路径和，省去了O(mn)空间。
+class Solution {
+    public int shortestDistance(int[][] grid) {
+        if(grid.length==0||grid[0].length==0) return -1;
+        int[][] reach = new int[grid.length][grid[0].length];
+        int count = 0;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]==1){
+                    count++;
+                    mark(grid, reach, i, j);
+                }
+            }
+        }
+        int result = -1;
+        for(int i=0;i<grid.length;i++){
+            for(int j=0;j<grid[0].length;j++){
+                if(grid[i][j]<0 && reach[i][j] == count){
+                    result = (result==-1)?-grid[i][j]:Math.min(result, -grid[i][j]);
+                }
+            }
+        }
+        return result;
+    }
+    
+    public void mark(int[][] grid, int[][] reach, int i, int j){
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        int[] xs = new int[]{1, -1, 0, 0};
+        int[] ys = new int[]{0, 0, 1, -1};
+        int step = 0;
+        LinkedList<int[]> queue = new LinkedList<int[]>();
+        queue.offer(new int[]{i, j});
+        int count=1;
+        while(queue.size()>0){
+            int[] loc = queue.poll();
+            for(int k=0;k<xs.length;k++){
+                int x = loc[0]+xs[k];
+                int y = loc[1]+ys[k];
+                if(x>=0 && x<grid.length && y>=0 && y<grid[0].length && !visited[x][y] && grid[x][y]<=0){
+                    grid[x][y]-=step+1;
+                    visited[x][y] = true;
+                    reach[x][y]++;
+                    queue.offer(new int[]{x, y});
+                }
+            }
+            count--;
+            if(count==0){
+                step++;
+                count=queue.size();
+            }
+        }
+    }
+}

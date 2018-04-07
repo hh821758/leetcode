@@ -1,0 +1,44 @@
+LC 251 Flatten 2D Vector
+
+Google
+
+Medium
+
+比较典型的利用iterator的题目。
+
+public class Vector2D implements Iterator<Integer> {
+    Iterator<List<Integer>> all;
+    Iterator<Integer> row;
+    public Vector2D(List<List<Integer>> vec2d) {
+        
+        all = vec2d.iterator();
+        if(all.hasNext()){
+            row = all.next().iterator();
+        }
+    }
+
+    @Override
+    public Integer next() {
+        if(hasNext()){
+            return row.next();
+        }else{
+            return 0;
+        }
+    }
+
+    @Override
+    public boolean hasNext() {
+        if(row!=null && row.hasNext()){
+            return true;
+        }else{
+            while((row==null || !row.hasNext()) && all.hasNext()){
+                row = all.next().iterator();
+            }
+            if(row == null || !row.hasNext()){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+}
