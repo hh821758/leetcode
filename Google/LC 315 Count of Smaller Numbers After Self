@@ -10,16 +10,18 @@ class Solution {
         TreeNode left;
         TreeNode right;
         int dup;
+        int smaller;
         public TreeNode(int val){
             this.val = val;
-            dup=1;
+            dup = 1;
+            smaller = 0;
         }
     }
     public List<Integer> countSmaller(int[] nums) {
         TreeNode root = null;
         List<Integer> list = new ArrayList<Integer>();
         for(int i=nums.length-1;i>=0;i--){
-            helper(nums[i],root,0, list);
+            root = helper(nums[i],root,0, list);
         }
         return list;
     }
@@ -31,12 +33,15 @@ class Solution {
         }else{
             if(root.val == num){
                 root.dup++;
-                list.add(0, count);
+                
+                list.add(0, count+root.smaller);
             }else if(root.val > num){
+                root.smaller++;
                 root.left = helper(num, root.left, count, list);
             }else if(root.val < num){
-                root.right = helper(num, root.right, count+root.dup, list);
+                root.right = helper(num, root.right, count+root.dup+root.smaller, list);
             }
         }
         return root;
     }
+}

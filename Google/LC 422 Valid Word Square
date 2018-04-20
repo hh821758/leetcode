@@ -1,0 +1,38 @@
+LC 422 Valid Word Square
+
+Google
+
+Easy
+
+虽然是easy题，但是很不好写。一开始的思路错了，想的是选取对角线上的点，向上和向左观察，要求string一致，但是这个square中并不能保证对角线一定有点，所以应该是从左和从上向对角线方向观察，出现不一致或长度或者横向string长度不成立的时候，则报错。
+
+EX 1:
+下面的例子中，报错的点是在i=2的时候，处理第三行和第三列。j循环中，j能够到达3，但是这时的word2为le，word2.length()<=i (2<=2)，说明word2这时无法提供第三个character与第三行的string相匹配。
+
+ball
+asee
+letx
+le
+
+EX 2：
+下面例子中，报错的点是在i=3，处理第四行第四列时。j循环中，j能到达的最大值为2，当取到j=2时，我们想有word2的第i+1个char，但是word2这时的length为3，3<=i, 于是报错。
+
+ball
+asee
+let
+lep
+
+class Solution {
+    public boolean validWordSquare(List<String> words) {
+
+        for(int i=0;i<words.size();i++){
+            String word = words.get(i);
+            if(word.length()>words.size()) return false;
+            for(int j=0;j<word.length();j++){
+                String word2 = words.get(j);
+                if(word2.length()<=i || word.charAt(j)!=word2.charAt(i)) return false;
+            }
+        }
+        return true;
+    }
+}
