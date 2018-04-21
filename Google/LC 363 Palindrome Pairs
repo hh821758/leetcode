@@ -1,0 +1,59 @@
+LC 363 Palindrome Pairs
+
+Google
+
+Hard
+
+思路已经接近了discussion中的解，但是细节处理上不够好，所以按照discussion的思路写出来了。 有一些需要注意的点：
+
+在选取word的substring的时候，要考虑到为空的substring，我过去的解法是单独对这种情况进行讨论，如果有空string，那么就寻找原始string本身就为palin的进行配对。
+
+而下面的解法中，比较巧妙的使用了在for loop中使用了<=，从而引入了对""substring的讨论：
+比如 ["a", ""]
+同时在处理string tail的时候，专门要求tail的substring不为空，从而避免重复运算, 比如：
+["abc", "cba"]
+
+class Solution {
+    public List<List<Integer>> palindromePairs(String[] words) {
+        
+        HashMap<String, Integer> map = new HashMap<String,Integer>();
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        for(int i=0;i<words.length;i++){
+            map.put(words[i],i);
+        }
+        for(int i=0;i<words.length;i++){
+            String word = words[i];
+            for(int j=0;j<=word.length();j++){
+                String str1 = word.substring(0, j);
+                String str2 = word.substring(j);
+                if(isPalin(str1)){
+                    String tmp = new StringBuilder(str2).reverse().toString();
+                    if(map.containsKey(tmp) && map.get(tmp)!=i){
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(map.get(tmp));
+                        list.add(i);
+                        result.add(list);
+                    }
+                }
+                if(isPalin(str2)){
+                    String tmp = new StringBuilder(str1).reverse().toString();
+                    if(!str2.isEmpty() && map.containsKey(tmp) && map.get(tmp)!=i){
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(i);
+                        list.add(map.get(tmp));
+                        result.add(list);
+                    }
+                }
+            }
+            
+        }
+        return result;
+    }
+    
+    public boolean isPalin(String word){
+        for(int i=0;i<=word.length()/2-1;i++){
+            if(word.charAt(i)!=word.charAt(word.length()-i-1)) return false;
+        }
+        return true;
+    }
+}

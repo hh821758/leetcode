@@ -1,0 +1,115 @@
+LC 327 Count of Range Sum
+
+Google
+
+Hard
+
+这个题的思路非常值得学习。 
+
+Merge Sort解法：
+基本的思路: 记录从0到i的sum为sum[i],针对任何j>i并且sum[j]-sum[i]在所求的range内，range从i到j就满足需求。naive的方法是针对任何ij对都进行运算，所以时间是O(n^2).
+利用merge sort的方法可以利用更多的空间把时间简化。
+
+拿merge sort的任一层级举例：
+左边和右边是分别sort好的。
+| a b c | d e f |
+按顺序从左半边取值，针对任意左边的值，在右边找符合条件的区间，区间有多长就表示找到了多少种符合条件的range。用变量left和right记录右边观察的符合条件的区间的边界index。
+注意到left和right只能是只能是一直递增的状态，所以比较的过程被简化到了O(n), 多余的时间花在了每次把左右部分merge起来，总的merge时间消耗是O(nlgn)。
+
+class Solution {
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        long[] sum = new long[nums.length+1];
+        for(int i=0;i<nums.length;i++){
+            sum[i+1] = sum[i]+nums[i];
+        }
+        
+        return helper(sum, 0, nums.length, lower, upper);
+    }
+    
+    public int helper(long[] sum, int start, int end, int lower, int upper){
+        if(end-start<1) return 0;
+        int mid = (end-start)/2+start;
+        int count = helper(sum, start, mid, lower, upper)+helper(sum, mid+1, end, lower, upper);
+        int left = mid+1; // 右边符合条件的区间的左边界
+        int right = mid+1; // 右边符合条件的区间的右边界
+        int index = mid+1; // 当前merge要取的右边的element的index
+        long[] cache = new long[end-start+1]; // 临时记录从start到end段的merge结果
+        int p = 0; // 当前merge要插入的cache array的位置。
+        for(int i=start;i<=mid;i++){
+            while(left<=end && sum[left]-sum[i]<lower) left++; // 找或更新左边界
+            while(right<=end && sum[right]-sum[i]<=upper) right++; //找或更新右边界
+
+            //把当前能merge的部分merge
+            while(index<=end && sum[index]<sum[i]) cache[p++] = sum[index++];
+            cache[p++] = sum[i];
+
+            // 当前的sum[i]能满足的数量。
+            count+=right-left;
+        }
+        for(int i=0;i<p;i++){
+            sum[i+start] = cache[i];
+        }
+        return count;
+    }
+}
+
+
+Divide and Conquer思路：
+想要找range为所求范围的解数量, 可以满足下面的思路：
+T(0,n) = T(0-m) + T(m+1, n) + C 
+其中m为0到n的mid，C为跨过中点的range的解数量。计算T(0-m)和T(m+1, n)总时间为O(nlgn)。难点是如何获得C。
+
+这里用到的想法是，T(0-m)的suffix和T(m+1, n)的prefix结合。这里的suffix和prefix都是从中点向两侧扩散出去的sum。可以将T(0, m)的suffix进行sort，那么针对任意
+T(m+1, n)的prefix值val，问题变成了在sort好的suffix中，寻找哪些在lower-value到upper-value的范围内，这时可以用binary search去找。
+如果把prefix也进行sort，那么就变成了和上题merge sort思路一致，在sort好的suffix中从左到右扫就好。
+
+public int countRangeSum(int[] nums, int lower, int upper) {
+    if (nums == null || nums.length == 0 || lower > upper) return 0;
+    return countRangeSumSub(nums, 0, nums.length - 1, lower, upper);
+}
+
+private int countRangeSumSub(int[] nums, int l, int r, int lower, int upper) {
+    if (l == r) return nums[l] >= lower && nums[r] <= upper ? 1 : 0;  // base case
+	
+    int m = l + (r - l) / 2;
+    long[] arr = new long[r - m];  // prefix array for the second subarray
+    long sum = 0;
+    int count = 0;
+	
+    for (int i = m + 1; i <= r; i++) {
+	sum += nums[i];
+	arr[i - (m + 1)] = sum;	// compute the prefix array
+    }
+	
+    Arrays.sort(arr);  // sort the prefix array
+	
+    // Here we can compute the suffix array element by element.
+    // For each element in the suffix array, we compute the corresponding
+    // "insertion" indices of the modified bounds in the sorted prefix array
+    // then the number of valid ranges sums will be given by the indices difference.
+    // I modified the bounds to be "double" to avoid duplicate elements.
+    sum = 0;
+    for (int i = m; i >= l; i--) {
+	sum += nums[i];  
+	count += findIndex(arr, upper - sum + 0.5) - findIndex(arr, lower - sum - 0.5);
+     }
+	
+    return countRangeSumSub(nums, l, m, lower, upper) + countRangeSumSub(nums, m + 1, r, lower, upper) + count;
+}
+
+// binary search function
+private int findIndex(long[] arr, double val) {
+    int l = 0, r = arr.length - 1, m = 0;
+	
+    while (l <= r) {
+	m = l + (r - l) / 2;
+		
+	if (arr[m] <= val) {
+	    l = m + 1;
+	} else {
+	    r = m - 1;
+        }
+    }
+	
+    return l;
+}

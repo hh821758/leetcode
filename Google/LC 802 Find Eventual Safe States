@@ -1,0 +1,84 @@
+LC 802 Find Eventual Safe States
+
+Google
+
+Medium
+
+虽然找到了思路，但是没有意识到这个题依然可以用directed graph标注状态的方法来写。
+值得比较自己的写法和别人的思路：
+
+自己的写法：
+class Solution {
+     public List<Integer> eventualSafeNodes(int[][] graph) {
+        HashMap<Integer,Boolean> safe = new HashMap<Integer,Boolean>();
+       
+        List<Integer> result = new ArrayList<Integer>();
+        for(int i=0;i<graph.length;i++){
+            if(isSafe(graph, safe, i, new HashSet<Integer>())) result.add(i);
+        }
+        return result;
+    }
+   
+    public boolean isSafe(int[][] graph, HashMap<Integer,Boolean> safe, int i, HashSet<Integer> visited){
+        if(safe.containsKey(i)) return safe.get(i);
+        visited.add(i);
+        for(int j=0;j<graph[i].length;j++){
+            if(visited.contains(graph[i][j]) || !isSafe(graph, safe, graph[i][j], visited)){
+                safe.put(i, false);
+                return false;
+            }
+        }
+        visited.remove(i);
+        safe.put(i, true);
+        return true;
+   
+    }
+}
+
+别人的写法：
+class Solution {
+    public static enum STATUS{
+        UNVISITED,
+        VISITED,
+        UNSAFE,
+        SAFE
+        
+    }
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        STATUS[] visited = new STATUS[graph.length];
+        for(int i=0;i<visited.length;i++){
+             visited[i] = STATUS.UNVISITED;
+         }
+        for(int i=0;i<graph.length;i++){
+            if(visited[i]==STATUS.UNVISITED){
+                dfs(i,graph,visited);
+            }
+        }
+        List<Integer> ret = new ArrayList<>();
+        for(int i=0;i<visited.length; i++){
+            if(visited[i] == STATUS.SAFE){
+                ret.add(i);
+            }
+        }
+        return ret;
+    }
+    
+    public boolean dfs(int cur, int[][] graph, STATUS[] visited){
+        if(visited[cur]==STATUS.UNSAFE || visited[cur]==STATUS.VISITED){
+            visited[cur]=STATUS.UNSAFE;
+            return false;
+        }
+        if(visited[cur]==STATUS.SAFE){
+            return true;
+        }
+        visited[cur]=STATUS.VISITED;
+        for(int i=0;i<graph[cur].length;i++){
+            if(!dfs(graph[cur][i],graph,visited)){
+                visited[cur] =STATUS.UNSAFE;
+                return false;
+            }
+        }
+        visited[cur] = STATUS.SAFE;
+        return true;
+    }
+}

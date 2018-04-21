@@ -1,0 +1,25 @@
+LC 544 Output Contest Matches
+
+Google
+
+Medium
+
+思路比较巧妙，每次两个pointer把处理出来的string合并在一起，一层一层递进。
+用iteration比较容易写。
+
+class Solution {
+    public String findContestMatch(int n) {
+        String[] array = new String[n];
+        for(int i=0;i<array.length;i++){
+            array[i] = String.valueOf(i+1);
+        }
+        while(array.length>1){
+            String[] next = new String[array.length/2];
+            for(int i=0;i<next.length;i++){
+                next[i] = "("+array[i]+","+array[array.length-i-1]+")";
+            }
+            array = next;
+        }
+        return array[0];
+    }
+}

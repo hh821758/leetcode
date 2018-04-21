@@ -1,0 +1,63 @@
+LC 240 Search a 2D Matrix II
+
+Google
+
+Medium
+
+这个Matrix是个从左到右递增，从上到下递增的矩阵。我一开始找到的方法是binary search，找到左边第一列第一个大于target的行位置end，和右边最后一列第一个个大于target的行位置start，那么target一定在start和end之间的行数里，这时再遍历或者继续在行里binary search。最差结果是O(logm)+O(logm)+O(m*logn)
+
+解答给出的方法相对简单跟多，而且只需要O（m+n）的时间：
+
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length==0 || matrix[0].length==0) return false;
+        int l = 0;
+        int r = matrix.length-1;
+        while(l<r){
+            int mid = (r-l)/2+l;
+            if(matrix[mid][0] == target) return true;
+            if(matrix[mid][0] < target){
+                l = mid+1;
+            }else{
+                r = mid;
+            }
+        }
+
+        int end = l;
+        
+        l = 0; r = matrix.length-1;
+        while(l<r){
+            int mid = (r-l)/2+l;
+            if(matrix[mid][matrix[0].length-1] == target) return true;
+            if(matrix[mid][matrix[0].length-1] < target){
+                l = mid+1;
+            }else{
+                r = mid;
+            }
+        }
+        
+        int start = l;
+        
+        for(int i = start;i<=end;i++){
+            for(int num:matrix[i]){
+                if(num == target) return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length==0 || matrix[0].length==0) return false;
+        int i = 0;
+        int j = matrix[0].length-1;
+        while(i<matrix.length &&j>=0){
+            if(matrix[i][j] == target) return true;
+            if(matrix[i][j]<target) i++;
+            else j--;
+        }
+        return false;
+    }
+}
