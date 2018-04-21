@@ -1,0 +1,28 @@
+LC 239 Sliding Window Maximum
+
+Google
+
+Hard
+
+只用queue记录满足要求的index，这种思路值得学习，因为可以方便的获取相关index的数值大小。
+
+具体到这道题，非常巧妙的利用deque，可以从deque的head和tail分别操作
+
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if(nums.length==0) return new int[0];
+        LinkedList<Integer> deque = new LinkedList<Integer>();
+        int[] result = new int[nums.length-k+1];
+        for(int i=0;i<nums.length;i++){
+            while(deque.size()>0 && i-deque.peek()>=k){
+                deque.poll();
+            }
+            while(deque.size()>0 && nums[i]>=nums[deque.peekLast()]){
+                deque.pollLast();
+            }
+            deque.offer(i);
+            if(i>=k-1) result[i-k+1] = nums[deque.peek()]; 
+        }
+        return result;
+    }
+}

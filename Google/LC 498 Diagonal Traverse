@@ -1,0 +1,40 @@
+LC 498 Diagonal Traverse
+
+Google
+
+Medium
+
+这个题有几个注意的点：
+1. 改变方向时，可以用比较简单的方法，比如用{-1, 1}代表x和y应该改变的值，当换方向时取负值，让array变成{1, -1}。
+还有种是直接用二维{{-1，1}，{1，-1}}，用index 0或1表示选取的方向，变方向时，index=1-index
+2. 当正好在对角线上穿过时，应该用超过右边界或超过下边界的条件来计算位置移动，所以下面的if else顺序不能错
+3. 如果用recursion的方法去实现，会有test case出现stackoverflow
+class Solution {
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if(matrix.length==0||matrix[0].length==0) return new int[0];
+        int[] result = new int[matrix.length*matrix[0].length];
+        int x = 0;
+        int y = 0;
+        for(int i=0;i<matrix.length*matrix[0].length;i++){
+            result[i] = matrix[x][y];
+            x = x+dir[0];
+            y = y+dir[1];
+            if(x>matrix.length-1){
+                x-=1; y+=2;
+                dir = new int[]{dir[1], dir[0]};
+            }else if(y>matrix[0].length-1){
+                y-=1; x+=2;
+                dir = new int[]{dir[1], dir[0]};
+            }else if(x<0){
+                x+=1;
+                dir = new int[]{dir[1], dir[0]};
+            }else if(y<0){
+                y+=1;
+                dir = new int[]{dir[1], dir[0]};
+            }
+        }
+        
+        return result;
+    }
+    int[] dir = new int[]{-1, 1};
+}

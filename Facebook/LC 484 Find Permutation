@@ -1,0 +1,39 @@
+LC 484 Find Permutation
+
+Google
+
+Medium
+
+给出一个IDDIDI这种string。要求只需要返回一个可行的结果即可，所以相对于backtracking一点点试，有更好的方法。
+
+这里用到的思路跟zigzag sort思路相似，将D的区间reverse即可。
+
+class Solution {
+    public int[] findPermutation(String s) {
+        int[] array = new int[s.length()+1];
+        for(int i=0;i<array.length;i++){
+            array[i] = i+1;
+        }
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i) == 'D'){
+                int left = i;
+                int right = i;
+                while(i<s.length() && s.charAt(i)=='D'){
+                    right++;
+                    i++;
+                }
+                reverse(left, right, array);
+            }
+        }
+        return array;
+    }
+    
+    public void reverse(int l, int r, int[] array){
+        while(r>l){
+            int tmp = array[l];
+            array[l] = array[r];
+            array[r] = tmp;
+            r--;l++;
+        }
+    }
+}
